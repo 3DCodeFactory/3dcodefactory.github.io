@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#020404" />
+  <title>After Hours — Untergrund Passage</title>
+  <meta name="description" content="An editable, procedurally built Three.js study of an abandoned tiled transit passage at night." />
+  <style>
+    @font-face {
+      font-family: "TunnelTag";
+      src: url("./fonts/TunnelTag.ttf") format("truetype");
+      font-weight: 700;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "TunnelWide";
+      src: url("./fonts/TunnelWide.ttf") format("truetype");
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    :root {
+      --ink: #e1ded1;
+      --ink-dim: rgba(225, 222, 209, 0.5);
+      --ink-faint: rgba(225, 222, 209, 0.25);
+      --cyan: #43c3cf;
+      --yellow: #e2c840;
+      --panel: rgba(4, 8, 8, 0.46);
+      --line: rgba(225, 222, 209, 0.18);
+      --pad: clamp(18px, 2.3vw, 38px);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; }
+    html { background: #020404; }
+    body {
+      overflow: hidden;
+      color: var(--ink);
+      font-family: "Helvetica Neue", "Arial Narrow", Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at 50% 55%, #070c0c 0%, #020404 68%);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #stage {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
+    #scene {
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      cursor: grab;
+      touch-action: none;
+    }
+    #scene:active { cursor: grabbing; }
+
+    
+    .ui {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: var(--pad);
+      transition: opacity 600ms ease, visibility 600ms ease;
+    }
+    html.chrome-hidden .ui { opacity: 0; visibility: hidden; }
+    html.capture-mode .ui,
+    html.capture-mode .loader,
+    html.capture-mode #intro-note { display: none !important; }
+
+    .ui::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 16%, transparent 72%, rgba(0,0,0,0.45) 100%);
+      opacity: 0.7;
+      mix-blend-mode: multiply;
+    }
+
+    .topbar, .bottombar {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+    }
+    .bottombar { align-items: flex-end; }
+
+    .brand {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      opacity: 0;
+      transform: translateY(-8px);
+      animation: chromeIn 1.1s cubic-bezier(.2,.7,.1,1) 1.1s forwards;
+    }
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      flex: none;
+      border: 1px solid var(--line);
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+    .brand-mark::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      background: var(--cyan);
+      box-shadow: 9px 9px 0 -3px var(--yellow);
+      transform: translate(-4.5px, -4.5px);
+    }
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-top: 1px solid rgba(225,222,209,.3);
+      border-left: 1px solid rgba(225,222,209,.3);
+    }
+    .brand-copy { display: flex; flex-direction: column; gap: 3px; padding-top: 1px; }
+    .brand-eyebrow {
+      font-family: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+    }
+    .brand-title {
+      font-family: "TunnelTag", "Arial Narrow", sans-serif;
+      font-weight: 700;
+      font-size: clamp(22px, 2.1vw, 32px);
+      line-height: 0.94;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+      margin: 0;
+      color: #ece8db;
+      text-shadow: 0 2px 22px rgba(0,0,0,0.6);
+    }
+    .brand-title em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+
+    .meta {
+      display: flex;
+      align-items: flex-start;
+      gap: clamp(24px, 4vw, 68px);
+      opacity: 0;
+      animation: chromeIn 1.1s cubic-bezier(.2,.7,.1,1) 1.28s forwards;
+    }
+    .meta-block {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-family: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      line-height: 1.6;
+      text-align: right;
+    }
+    .meta-block strong {
+      font-weight: 500;
+      color: rgba(225,222,209,.8);
+    }
+    .meta-rule {
+      display: block;
+      width: 38px;
+      height: 1px;
+      background: var(--line);
+      margin: 2px 0 3px auto;
+    }
+
+    .hint {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      opacity: 0;
+      animation: chromeIn 1.1s cubic-bezier(.2,.7,.1,1) 1.5s forwards;
+      text-shadow: 0 1px 8px rgba(0,0,0,.7);
+    }
+    .drag-glyph {
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--ink-dim);
+      font-size: 11px;
+    }
+    .hint-sep {
+      width: 1px;
+      height: 20px;
+      background: var(--line);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      pointer-events: auto;
+      opacity: 0;
+      animation: chromeIn 1.1s cubic-bezier(.2,.7,.1,1) 1.44s forwards;
+    }
+    .btn {
+      --b-ink: rgba(225,222,209,.72);
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--b-ink);
+      min-height: 38px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-family: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 220ms ease, border-color 220ms ease, background 220ms ease, transform 220ms ease;
+      backdrop-filter: blur(9px);
+      -webkit-backdrop-filter: blur(9px);
+      border-radius: 0;
+    }
+    .btn:hover {
+      color: #f4f0e2;
+      border-color: rgba(225,222,209,.4);
+      background: rgba(12,18,17,.66);
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn:focus-visible { outline: 1px solid var(--cyan); outline-offset: 3px; }
+    .btn .key {
+      color: rgba(225,222,209,.35);
+      font-size: 8px;
+      letter-spacing: .04em;
+      border-left: 1px solid var(--line);
+      padding-left: 8px;
+      margin-left: 3px;
+    }
+    .btn-flicker {
+      color: rgba(245, 239, 220, 0.9);
+      border-color: rgba(225, 200, 85, 0.28);
+      background: linear-gradient(180deg, rgba(20,20,13,.55), rgba(5,8,7,.55));
+    }
+    .btn-flicker:hover {
+      border-color: rgba(226, 200, 64, 0.7);
+      background: rgba(34, 30, 11, 0.58);
+      color: #fff8dc;
+    }
+    .bolt {
+      width: 13px;
+      height: 15px;
+      position: relative;
+      flex: none;
+    }
+    .bolt svg { width: 100%; height: 100%; display: block; }
+    .btn-flicker.active {
+      border-color: rgba(226,200,64,.75);
+      animation: boltPulse 340ms steps(2, end) infinite;
+    }
+    .btn-flicker.active .bolt { color: var(--yellow); filter: drop-shadow(0 0 6px rgba(226,200,64,.8)); }
+    .btn-quiet { color: rgba(225,222,209,.43); min-height: 34px; padding: 0 11px; }
+    .btn-quiet .btn-label { display: none; }
+    .btn-quiet:hover .btn-label { display: inline; }
+    .btn .btn-label { white-space: nowrap; }
+
+    .footnote {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
+      font-size: 8px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(225,222,209,.27);
+      opacity: 0;
+      animation: chromeIn 1.1s ease 1.7s forwards;
+    }
+    .footnote .swatch { width: 5px; height: 5px; background: var(--yellow); }
+    .footnote .swatch.cyan { background: var(--cyan); }
+    .footnote .slash { color: rgba(225,222,209,.18); }
+
+    .bottom-left {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    
+    .edge {
+      position: absolute;
+      pointer-events: none;
+      opacity: .5;
+    }
+    .edge-tl, .edge-tr, .edge-bl, .edge-br { width: 14px; height: 14px; }
+    .edge-tl { top: calc(var(--pad) - 11px); left: calc(var(--pad) - 11px); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+    .edge-tr { top: calc(var(--pad) - 11px); right: calc(var(--pad) - 11px); border-top: 1px solid var(--line); border-right: 1px solid var(--line); }
+    .edge-bl { bottom: calc(var(--pad) - 11px); left: calc(var(--pad) - 11px); border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); }
+    .edge-br { bottom: calc(var(--pad) - 11px); right: calc(var(--pad) - 11px); border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
+
+    #intro-note {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--pad) + 62px);
+      transform: translateX(-50%);
+      z-index: 11;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 12px 16px;
+      color: rgba(225,222,209,.55);
+      border: 1px solid rgba(225,222,209,.12);
+      background: rgba(3,6,6,.38);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-family: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
+      font-size: 8.5px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: opacity 600ms ease, transform 600ms ease;
+      animation: noteIn 1.2s cubic-bezier(.2,.7,.1,1) 2.4s both;
+    }
+    #intro-note:hover { color: rgba(240,236,222,.8); border-color: rgba(225,222,209,.22); }
+    #intro-note::before {
+      content: "";
+      width: 5px; height: 5px;
+      background: var(--yellow);
+      box-shadow: 0 0 10px rgba(226,200,64,.55);
+    }
+    #intro-note.dismissed { opacity: 0; transform: translate(-50%, 8px); pointer-events: none; }
+    .note-key {
+      border: 1px solid rgba(225,222,209,.2);
+      padding: 3px 5px;
+      font-size: 8px;
+      color: rgba(225,222,209,.75);
+    }
+
+    
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      background: #020404;
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+    .loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader.failed .loader-inner { border-color: rgba(160, 70, 50, .5); }
+    .loader-inner {
+      width: min(440px, 76vw);
+      padding: 0 2px;
+      position: relative;
+    }
+    .loader-kicker {
+      font-family: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
+      font-size: 8px;
+      letter-spacing: .34em;
+      text-transform: uppercase;
+      color: rgba(225,222,209,.28);
+      margin-bottom: 15px;
+    }
+    .loader-title {
+      font-family: "TunnelTag", "Arial Narrow", sans-serif;
+      font-size: clamp(54px, 8vw, 102px);
+      line-height: .83;
+      letter-spacing: .015em;
+      color: #e9e5d7;
+      margin: 0 0 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .loader-title span { color: var(--cyan); }
+    .loader-sub {
+      font-family: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", monospace;
+      font-size: 8px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(225,222,209,.28);
+      margin: 15px 0 22px;
+      display: flex;
+      justify-content: space-between;
+    }
+    #loader-label { color: rgba(225,222,209,.46); }
+    .loader-track {
+      height: 1px;
+      background: rgba(225,222,209,.12);
+      overflow: hidden;
+      transform-origin: left;
+    }
+    #loader-line {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--yellow));
+      transform: scaleX(.02);
+      transform-origin: left;
+      transition: transform 600ms cubic-bezier(.2,.7,.1,1);
+      box-shadow: 0 0 12px rgba(67,195,207,.25);
+    }
+    .loader-flicker {
+      position: absolute;
+      top: -60px;
+      right: 0;
+      width: 60px;
+      height: 1px;
+      background: var(--yellow);
+      opacity: .35;
+      animation: loaderFlicker 5s infinite;
+    }
+
+    @keyframes chromeIn {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes noteIn {
+      from { opacity: 0; transform: translate(-50%, 8px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    @keyframes boltPulse {
+      0%, 100% { background: rgba(48, 40, 10, 0.62); }
+      50% { background: rgba(20, 18, 8, 0.55); }
+    }
+    @keyframes loaderFlicker {
+      0%, 12%, 14%, 23%, 25%, 49%, 52%, 100% { opacity: .32; }
+      13%, 24%, 50%, 51% { opacity: .05; }
+    }
+
+    @media (max-width: 760px) {
+      .meta { display: none; }
+      .hint { font-size: 8px; }
+      .controls { gap: 6px; }
+      .btn { min-height: 36px; padding: 0 10px; font-size: 8px; }
+      .btn .key { display: none; }
+      .btn-quiet .btn-label { display: inline; }
+      .bottom-left { gap: 12px; }
+      .footnote { display: none; }
+      #intro-note { bottom: calc(var(--pad) + 54px); font-size: 8px; }
+    }
+    @media (max-width: 560px) {
+      :root { --pad: 15px; }
+      .hint-sep, .hint .secondary { display: none; }
+      .brand-title { font-size: 23px; }
+      .btn-save .btn-label, .btn-reset .btn-label { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+      .brand, .meta, .hint, .controls, .footnote { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="scene" aria-label="Interactive 3D view of an abandoned graffiti-covered underground passage"></canvas>
+  </div>
+
+  <div class="ui" aria-label="Scene controls">
+    <span class="edge edge-tl"></span><span class="edge edge-tr"></span>
+    <span class="edge edge-bl"></span><span class="edge edge-br"></span>
+
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div class="brand-copy">
+          <span class="brand-eyebrow">Untergrund · Passage 04</span>
+          <h1 class="brand-title">After <em>Hours</em></h1>
+        </div>
+      </div>
+      <div class="meta" aria-hidden="true">
+        <div class="meta-block">
+          <strong>52° 31′ N &nbsp; 13° 24′ E</strong>
+          <span>Closed line · east shaft</span>
+          <span>est. 1908 / sealed 1987</span>
+        </div>
+        <div class="meta-block">
+          <strong>Night survey 01:47</strong>
+          <span class="meta-rule"></span>
+          <span>12°C · 91% RH</span>
+          <span class="status">Standing water</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottombar">
+      <div class="bottom-left">
+        <div class="hint">
+          <span class="drag-glyph">↔</span>
+          <span>Drag to look</span>
+          <span class="hint-sep"></span>
+          <span class="secondary">Scroll to move</span>
+          <span class="hint-sep secondary"></span>
+          <span class="secondary">F for the lights</span>
+        </div>
+        <div class="footnote" aria-hidden="true">
+          <span class="swatch cyan"></span><span>cyan study</span>
+          <span class="slash">/</span>
+          <span class="swatch"></span><span>standing water</span>
+          <span class="slash">/</span>
+          <span>no daylight reaches here</span>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn btn-quiet btn-reset" id="reset-btn" type="button" title="Reset the camera (R)">
+          <span aria-hidden="true">↺</span><span class="btn-label">Reset view</span>
+        </button>
+        <button class="btn btn-quiet btn-save" id="save-btn" type="button" title="Save a PNG of this frame (S)">
+          <span aria-hidden="true">↓</span><span class="btn-label">Frame</span>
+        </button>
+        <button class="btn btn-flicker" id="flicker-btn" type="button" title="Let the fluorescent line stutter (F)" aria-pressed="false">
+          <span class="bolt" aria-hidden="true">
+            <svg viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.8 1L1.6 10.2H6.3L4.8 17L12.6 7.2H7.6L8.8 1Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="btn-label">Flicker</span>
+          <span class="key" aria-hidden="true">F</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="intro-note" role="button" tabindex="0" aria-label="Dismiss hint">
+    <span>The tubes are tired —</span>
+    <span class="note-key">F</span>
+    <span>make them stutter</span>
+    <span aria-hidden="true" style="opacity:.35">×</span>
+  </div>
+
+  <div id="loader" class="loader" role="status" aria-live="polite">
+    <div class="loader-inner">
+      <div class="loader-flicker" aria-hidden="true"></div>
+      <div class="loader-kicker">Subterranean survey · frame 001</div>
+      <h2 class="loader-title">After<br><span>Hours</span></h2>
+      <div class="loader-sub">
+        <span id="loader-label">Waking the tunnel</span>
+        <span>Three.js / WebGL</span>
+      </div>
+      <div class="loader-track"><div id="loader-line"></div></div>
+    </div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three.module.js",
+        "three/addons/": "./vendor/addons/"
+      }
+    }
+  </script>
+  <script type="module" src="./src/main.js"></script>
+  <noscript>
+    <div style="position:fixed;inset:0;display:grid;place-items:center;background:#020404;color:#ddd;font-family:monospace;z-index:100">JavaScript and WebGL are required to enter this passage.</div>
+  </noscript>
+<script src="../camera-limits.js"></script><script src="../scene-ui.js?v=20261114"></script></body>
+</html>

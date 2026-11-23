@@ -1,0 +1,83 @@
+.synthesis-animation{position:relative;min-width:0;padding:14px 18px 32px;background:white;scroll-margin-top:110px}
+.syn-canvas{display:block;width:100%;height:auto;overflow:visible}
+.syn-canvas text{font-family:'Times New Roman',Times,serif}
+.syn-stage{opacity:0;transition:opacity calc(.35s * var(--syn-time-scale, 1))}
+.syn-stage.is-shown{opacity:1}
+.syn-stage.is-active .syn-motion{animation:syn-fade calc(.65s * var(--syn-time-scale, 1)) calc(var(--delay) * var(--syn-time-scale, 1)) both}
+.syn-stage.is-active .syn-pop{animation-name:syn-pop;transform-box:fill-box;transform-origin:center}
+.syn-stage.is-active .syn-slide{animation-name:syn-slide}
+.syn-stage.is-active .syn-bar{animation-name:syn-grow;animation-duration:calc(1.1s * var(--syn-time-scale, 1))}
+.syn-stage.is-active .syn-balance{animation-name:syn-balance;animation-duration:calc(1.2s * var(--syn-time-scale, 1))}
+.syn-stage.is-active .syn-stamp{animation-name:syn-stamp;transform-box:fill-box;transform-origin:center}
+.syn-stage.is-active .syn-robot{animation-name:syn-robot;transform-box:fill-box;transform-origin:center}
+.syn-stage.is-active .syn-connector{animation:none}
+.syn-stage.is-active .syn-connector>path{stroke-dasharray:250;stroke-dashoffset:250;animation:syn-draw calc(.7s * var(--syn-time-scale, 1)) both}
+.syn-scan-wrap{opacity:0}
+.syn-stage.is-active .syn-scan-wrap{opacity:1}
+.syn-stage.is-active .syn-scan{animation:syn-scan calc(1s * var(--syn-time-scale, 1)) calc(.2s * var(--syn-time-scale, 1)) both}
+.synthesis-animation[data-static=true] .syn-stage{opacity:1}
+.synthesis-animation[data-static=true] .syn-motion,.synthesis-animation[data-static=true] .syn-connector>path{animation:none!important;stroke-dashoffset:0}
+.synthesis-animation[data-static=true] .syn-scan-wrap{display:none}
+.synthesis-animation.is-paused *{animation-play-state:paused!important}
+.syn-controls{position:absolute;right:18px;bottom:5px;display:flex;gap:4px}
+.syn-controls button{display:grid;place-items:center;width:24px;height:22px;padding:0;border:0;background:transparent;color:#999;font:15px/1 system-ui;cursor:pointer;border-radius:3px}
+.syn-controls button:hover{color:#333;background:#f4f4f2}
+.syn-controls button:focus-visible{outline:2px solid #999;outline-offset:2px}
+@keyframes syn-fade{from{opacity:0}to{opacity:1}}
+@keyframes syn-pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+@keyframes syn-slide{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes syn-grow{from{transform:scaleY(.04)}to{transform:scaleY(1)}}
+@keyframes syn-balance{from{transform:scaleY(var(--from))}to{transform:scaleY(1)}}
+@keyframes syn-stamp{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+@keyframes syn-robot{0%{opacity:.3;transform:scale(.9)}60%{opacity:1;transform:scale(1.1)}100%{opacity:1;transform:none}}
+@keyframes syn-draw{to{stroke-dashoffset:0}}
+@keyframes syn-scan{0%{opacity:0;transform:translateY(0)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:translateY(210px)}}
+
+@media(prefers-reduced-motion:reduce){.synthesis-animation *{animation:none!important;transition:none!important}}
+
+.syn-candidate-badge{opacity:1}
+.syn-stage.is-active .syn-candidate{animation:syn-fade calc(.55s * var(--syn-time-scale, 1)) calc(var(--appear-delay) * var(--syn-time-scale, 1)) both}
+.syn-stage.is-active .syn-candidate-badge{animation:syn-stamp calc(.4s * var(--syn-time-scale, 1)) calc(var(--judge-delay) * var(--syn-time-scale, 1)) both;transform-box:fill-box;transform-origin:center}
+.syn-stage.is-active .syn-candidate-reject{animation:syn-fade calc(.55s * var(--syn-time-scale, 1)) calc(var(--appear-delay) * var(--syn-time-scale, 1)) both,syn-discard calc(.7s * var(--syn-time-scale, 1)) calc(4.7s * var(--syn-time-scale, 1)) forwards}
+.syn-stage.is-shown:not(.is-active) .syn-candidate-reject,.synthesis-animation[data-static=true] .syn-candidate-reject{opacity:.28}
+.synthesis-animation[data-static=true] .syn-candidate,.synthesis-animation[data-static=true] .syn-candidate *{animation:none!important}
+.syn-handoff{opacity:0;transition:opacity calc(.3s * var(--syn-time-scale, 1))}
+.syn-route-reveal{stroke-dasharray:1000;stroke-dashoffset:0}
+.synthesis-animation[data-phase="4"][data-static=false] .syn-handoff{opacity:1}
+.synthesis-animation[data-phase="4"][data-static=false] .syn-route-reveal{animation:syn-handoff-draw calc(1.6s * var(--syn-time-scale, 1)) calc(5.4s * var(--syn-time-scale, 1)) both}
+@keyframes syn-discard{to{opacity:.28}}
+@keyframes syn-handoff-draw{0%{opacity:0;stroke-dashoffset:1000}1%{opacity:1}100%{opacity:1;stroke-dashoffset:0}}
+.syn-stage:not(.is-shown) .syn-candidate-badge{opacity:0}
+.synthesis-animation[data-static=true] .syn-candidate-badge{opacity:1}
+
+.synthesis-animation[data-phase="4"][data-static=false] .syn-handoff-robot{animation:syn-pop calc(.55s * var(--syn-time-scale, 1)) calc(6.3s * var(--syn-time-scale, 1)) both;transform-box:fill-box;transform-origin:center}
+
+.synthesis-animation[data-static=false] .syn-stage:not(.is-shown) .syn-candidate{opacity:0}
+
+.syn-closing-title{opacity:0}
+.synthesis-animation[data-phase="8"][data-static=false] .syn-closing-title{animation:syn-title-reveal calc(1.3s * var(--syn-time-scale, 1)) calc(.15s * var(--syn-time-scale, 1)) both}
+.synthesis-animation[data-static=true] .syn-closing-title{opacity:1;transform:none}
+@keyframes syn-title-reveal{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+
+.syn-closing-frame{opacity:0}
+.synthesis-animation[data-phase="8"][data-static=false] .syn-closing-frame{animation:syn-fade calc(1.1s * var(--syn-time-scale, 1)) both}
+.synthesis-animation[data-static=true] .syn-closing-frame{opacity:1}
+
+#method .method-synthesis.stage-card{display:flex;flex-direction:column;background:#fff}
+#method .method-synthesis.stage-card>.method-explainer,#method .stage-card>.flow-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:6px 32px;align-items:center;padding:24px 28px;background:#d6efe9;border-bottom:1px solid var(--line)}
+#method .method-synthesis.stage-card>.method-explainer>.eyebrow{grid-column:1;margin:0;color:#486e62}
+#method .method-synthesis.stage-card>.method-explainer>h3,#method .stage-card>.flow-intro h3{grid-column:1;font-size:22px;line-height:1.4;margin:6px 0 0}
+#method .method-synthesis.stage-card>.method-explainer>p:not(.eyebrow),#method .stage-card>.flow-intro>p{grid-column:2;grid-row:1/span 2;font-size:13.5px;line-height:1.8;margin:0;color:#48635b}
+.synthesis-animation{padding:20px 28px 34px}
+.syn-canvas{max-width:1060px;margin-inline:auto}
+.syn-closing-frame,.syn-closing-title{display:none!important}
+#method .method-copy-group{display:inline;margin:0}
+@media(max-width:850px){#method .method-synthesis.stage-card>.method-explainer,#method .stage-card>.flow-intro{grid-template-columns:1fr;gap:10px;padding:20px}#method .method-synthesis.stage-card>.method-explainer>p:not(.eyebrow),#method .stage-card>.flow-intro>p{grid-column:1;grid-row:auto}}
+
+
+#method .method-synthesis.stage-card{display:grid;grid-template-columns:1fr 2fr;align-items:stretch;background:#fff}
+#method .method-synthesis.stage-card>.method-explainer{display:flex;flex-direction:column;justify-content:center;background:#d6efe9;border:0;padding:28px}
+#method .method-synthesis.stage-card>.method-explainer>.eyebrow{align-self:flex-start;margin:0;color:var(--muted)}
+#method .method-synthesis.stage-card>.method-explainer>h3{font-size:24px;line-height:1.6;margin:12px 0 18px}
+#method .method-synthesis.stage-card>.method-explainer>p:not(.eyebrow){font-size:13px;line-height:1.9;margin:0;color:#56746a}
+.synthesis-animation{position:relative;min-width:0;padding:14px 18px 32px;background:white;scroll-margin-top:110px}

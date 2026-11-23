@@ -1,0 +1,21 @@
+.task-details .case-switch{display:inline-flex;gap:4px;padding:3px;margin:0 0 14px;border:1px solid #dce5df;border-radius:6px;background:#f0f4f1}
+.task-details .case-switch button{margin:0;padding:6px 12px;border:0;border-radius:4px;background:transparent;color:#6b7971;font-family:inherit;font-size:12px;font-weight:500;line-height:1.4;white-space:nowrap;cursor:pointer}
+.task-details .case-switch button[aria-selected="true"]{background:#a4e7da;color:#245d4e;font-weight:650}
+.task-details .case-switch button:hover{color:#245d4e}
+.task-details .case-tab-panel[hidden]{display:none!important}
+.task-details .rubric-readable .rubric-levels{display:flex;flex-direction:column;gap:12px;margin:0;padding:0}
+.task-details .rubric-readable .rubric-levels>.rubric-level{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;width:100%;align-items:start}
+.task-details .rubric-readable .rubric-level>dt,.task-details .rubric-readable .rubric-level>dd{margin:0;padding:0;min-width:0;font-size:12px;line-height:1.85;overflow-wrap:anywhere}
+.task-details .rubric-readable h6{margin:0 0 12px;font-size:12px;line-height:1.7;color:#36594a}
+
+
+.task-details .appendix-prompt .prompt-title{margin-bottom:10px;font-size:12px;line-height:1.7}
+.task-details .appendix-prompt .prompt-subtitle{margin-bottom:5px;line-height:1.7}
+.task-details .appendix-prompt .prompt-section{margin-top:16px}
+.task-details .appendix-prompt .prompt-intro:has(+.prompt-section) .prompt-title{margin-bottom:0}
+@media(min-width:1051px){
+ .task-pair .task-details{grid-template-columns:minmax(0,.76fr) minmax(0,1.24fr);gap:28px}
+ .task-details .complete-rubrics{padding-left:24px}
+}
+
+.task-details .rubric-readable .rubric-level>dd{width:100%;max-width:none;white-space:normal;word-break:normal;overflow-wrap:break-word}

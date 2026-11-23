@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#05070a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23070b0d'/%3E%3Cpath d='M8 7v18M24 7v18M8 16h16' stroke='%237fe7f1' stroke-width='2.4'/%3E%3C/svg%3E">
+  <title>Bay 03 — Charge &amp; Inspection</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three.module.js",
+        "three/addons/": "./vendor/addons/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <main id="stage" aria-label="Interactive 3D robotic charging and inspection bay">
+    <div id="scene-mount"></div>
+
+    <div id="boot" role="status" aria-live="polite">
+      <div class="boot-inner">
+        <div class="boot-kicker">HELIOS<span>/</span>FM-03</div>
+        <div class="boot-title">CALIBRATING AISLE</div>
+        <div class="boot-track"><i></i></div>
+        <div class="boot-meta">OPTICAL LINK <span id="boot-pct">00</span>%</div>
+      </div>
+    </div>
+
+    <div id="hud">
+      <div class="edge-mark edge-tl"></div>
+      <div class="edge-mark edge-tr"></div>
+      <div class="edge-mark edge-bl"></div>
+      <div class="edge-mark edge-br"></div>
+
+      <header class="brand-block">
+        <div class="brand-rail">
+          <span class="brand-glyph">H</span>
+          <span class="brand-word">HELIOS</span>
+          <span class="brand-div">/</span>
+          <span class="brand-sub">FLEET OPS</span>
+        </div>
+        <h1>CHARGE <em>&amp;</em> INSPECTION</h1>
+        <p class="brand-loc"><span>DC—07</span> AUTOMATED SERVICE AISLE <b>03</b></p>
+      </header>
+
+      <aside class="telemetry" aria-label="Facility telemetry">
+        <div class="telemetry-top">
+          <span class="live-dot"></span>
+          <span>FACILITY LINK</span>
+          <strong>NOMINAL</strong>
+        </div>
+        <div class="telemetry-grid">
+          <div><span>TEMP</span><b>18.4°C</b></div>
+          <div><span>HUMIDITY</span><b>42.0%</b></div>
+          <div><span>AIRFLOW</span><b>0.42 m/s</b></div>
+        </div>
+      </aside>
+
+      <div class="reticle" aria-hidden="true"><span></span></div>
+
+      <section class="control-deck" aria-label="Bay controls">
+        <div class="deck-head">
+          <span class="deck-index">LOCAL CONTROL</span>
+          <span class="deck-line"></span>
+          <button id="hud-toggle" class="hud-toggle" type="button" aria-label="Hide interface">HUD&nbsp;H</button>
+        </div>
+
+        <button class="control control-dock" id="dock-button" type="button">
+          <span class="control-index">01</span>
+          <span class="control-copy">
+            <strong>ENGAGE DOCK <span class="mono">02</span></strong>
+            <small id="dock-caption">VACANT CHARGING PORT</small>
+          </span>
+          <span class="control-state" id="dock-state"><i></i>IDLE</span>
+        </button>
+
+        <button class="control control-beacon" id="beacon-button" type="button">
+          <span class="control-index">02</span>
+          <span class="control-copy">
+            <strong>RUN BEACON TEST</strong>
+            <small>CEILING / CABINET SIGNAL</small>
+          </span>
+          <span class="control-state warn" id="beacon-state"><i></i>ARMED</span>
+        </button>
+
+        <div class="deck-foot">
+          <span><kbd>DRAG</kbd> ORBIT</span>
+          <span><kbd>SCROLL</kbd> DOLLY</span>
+          <span><kbd>1</kbd><kbd>2</kbd> ACTION</span>
+        </div>
+      </section>
+
+      <div class="hint-line" id="hint-line">
+        <span class="hint-key">INTERACT</span>
+        <span>Inspect the vacant dock, or call the far beacon.</span>
+      </div>
+
+      <div class="corner-note" aria-hidden="true">
+        <span>SCENE 03—A</span>
+        <span>1536 / 1024</span>
+      </div>
+
+      <div id="tooltip" aria-hidden="true">
+        <span id="tooltip-kicker">DOCK 02</span>
+        <span id="tooltip-main">ENGAGE</span>
+      </div>
+    </div>
+
+    <div id="webgl-fail" hidden>
+      <h2>WebGL unavailable</h2>
+      <p>This scene needs a browser with hardware-accelerated WebGL 2.</p>
+    </div>
+  </main>
+
+  <script type="module" src="./src/main.js"></script>
+<script src="../camera-limits.js"></script><script src="../scene-ui.js?v=20261114"></script></body>
+</html>

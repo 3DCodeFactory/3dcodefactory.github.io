@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="3DCodeFactory: Scaling Training Data for 3D Code Agents." name="description"/>
+<meta content="#ffffff" name="theme-color"/>
+<title>3DCodeFactory — 让 Code Agent 学会构建复杂三维世界</title>
+<link href="assets/brand-mint.svg" rel="icon"/>
+<link href="style.css?v=30" rel="stylesheet"/>
+<link href="layout.css?v=30" rel="stylesheet"/>
+<link href="media-lightbox.css?v=20261117-playback3" rel="stylesheet"/>
+<link href="dots-theme.css?v=gen04-min8" rel="stylesheet"/>
+<link href="case-tabs.css?v=30" rel="stylesheet"/>
+<link href="flat-controls.css?v=30" rel="stylesheet"/>
+<link href="task-synthesis.css?v=30" rel="stylesheet"/>
+<link href="rollout-animation.css?v=30" rel="stylesheet"/>
+<link href="paper-header.css?v=30" rel="stylesheet"/>
+<link href="showcase-k2.css?v=30" rel="stylesheet"/>
+<link href="results-table.css?v=30" rel="stylesheet"/>
+<script defer="" src="results-table.js?v=30"></script>
+<link href="benchmark-gallery.css?v=30" rel="stylesheet"/>
+<link rel="stylesheet" href="i18n.css?v=30"/>
+</head>
+<body>
+<a class="skip" href="#showcase">
+   跳转到案例展示
+  </a>
+<header>
+<a class="brand" href="#">
+<img alt="" class="brand-icon" height="820" src="assets/brand-mint.svg" width="720"/>
+    3DCodeFactory
+   </a>
+<nav aria-label="主导航">
+<a href="#showcase">场景展示</a>
+<a href="#code">源码对照</a>
+<a href="#evolution">构建实录</a>
+<a href="#generation">生成展示</a>
+<a href="#method">合成框架</a>
+<a href="#tasks">验收标准</a>
+<a href="#dataset">开源数据</a>
+<a href="#results">下游评测</a>
+<a href="#citation">引用</a>
+</nav>
+</header>
+<main>
+<section class="intro">
+<div class="hero-copy">
+<h1>
+      3DCodeFactory
+     </h1>
+<p class="paper-subtitle"><span class="hero-lead">让 Code Agent 学会构建复杂三维世界</span></p>
+<div aria-label="论文作者与机构" class="paper-byline">
+  <div class="paper-authors">
+    <span>Zhaoyu Wang</span>
+    <span>Xueru Wen</span>
+    <span>Xingyu Li</span>
+    <span>Jie Lou<sup>*</sup></span>
+  </div>
+  <p class="paper-affiliation">
+    <span class="affil-item">小红书</span>
+    <i aria-hidden="true"></i>
+    <img alt="dots studio" class="dots-studio-logo" height="16" src="assets/dots-studio-logo.png" width="95"/>
+    <i aria-hidden="true"></i>
+    <span class="lead-note"><sup>*</sup><span>项目负责人</span></span>
+  </p>
+</div>
+<div aria-label="项目资源" class="paper-links paper-project-links">
+<a aria-label="阅读论文 PDF" class="project-link project-link-primary" href="https://github.com/3DCodeFactory/3DCodeFactory/blob/main/assets/paper/3DCodeFactory.pdf" rel="noopener" target="_blank"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"></path><path d="M14 3v5h4M9 12h6M9 16h6"></path></svg><b>Paper</b><small>PDF</small></a>
+<a class="project-link" href="https://github.com/3DCodeFactory/3DCodeFactory" rel="noopener" target="_blank"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.54v-2.06c-3.1.68-3.76-1.32-3.76-1.32-.51-1.29-1.24-1.64-1.24-1.64-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15.99 1.7 2.6 1.21 3.24.93.1-.72.39-1.21.7-1.49-2.47-.28-5.07-1.24-5.07-5.5 0-1.21.43-2.2 1.14-2.98-.11-.28-.5-1.41.11-2.94 0 0 .93-.3 3.05 1.14a10.6 10.6 0 0 1 5.56 0c2.12-1.44 3.05-1.14 3.05-1.14.61 1.53.22 2.66.11 2.94.71.78 1.14 1.77 1.14 2.98 0 4.27-2.6 5.22-5.08 5.5.4.35.76 1.02.76 2.06v3.05c0 .3.2.65.76.54A11.1 11.1 0 0 0 12 .9Z" fill="currentColor" stroke="none"></path></svg><b>GitHub</b></a>
+<a class="project-link" href="https://huggingface.co/datasets/wangzhaoyu/3DCodeFactory" rel="noopener" target="_blank"><img alt="" src="assets/bmk/method/icon_hf.webp"/><b>Hugging Face</b></a>
+<button aria-label="arXiv，待发布" class="project-link project-link-pending" disabled="" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M6 4l12 16M17 4l-4 5M11 15l-4 5"></path></svg><b>arXiv</b><small>Soon</small></button>
+</div>
+</div>
+<figure class="hero-stage">
+<video autoplay="" aria-label="3DCodeFactory 项目全貌先导片" controls="" id="hero-video" muted="" playsinline="" poster="assets/project-overview-v12-first-frame.webp" data-ended-poster="assets/project-overview-v12-white-poster.webp?v=20261117-white" preload="auto">
+</video>
+<script src="hero-stream.js?v=20261120"></script>
+</figure>
+</section>
+<section aria-label="数据集概览" class="stats">
+<div>
+<small>
+      TRAJECTORIES
+     </small>
+<strong>
+      5,045
+     </strong>
+<span>
+      通过验收的多轮训练轨迹
+     </span>
+<p>
+      2,920 Blender · 2,125 Three.js
+     </p>
+</div>
+<div>
+<small>
+      CODE SCALE
+     </small>
+<strong>
+      4,270
+     </strong>
+<span>
+      单场景代码行数中位数
+     </span>
+<p>
+      单条轨迹平均包含 109 万词元
+     </p>
+</div>
+<div>
+<small>
+      TAXONOMY
+     </small>
+<strong>
+      56
+     </strong>
+<span>
+      细粒度三维类别（10 大领域）
+     </span>
+<p>
+      87.7% 为跨领域多对象复合场景
+     </p>
+</div>
+<div>
+<small>
+      BENCHMARK GAIN
+     </small>
+<strong>
+      +27.81
+     </strong>
+<span>
+      三项基准综合得分平均提升
+     </span>
+<p>
+      Qwen3.5-9B 监督微调性能增益
+     </p>
+</div>
+</section>
+<section class="section" id="showcase">
+<div class="section-heading">
+<div class="heading-line">
+<span aria-hidden="true" class="section-number">
+       01
+      </span>
+<div>
+<p class="eyebrow">
+        SHOWCASE
+       </p>
+<h2>每一个场景，都由代码构建</h2>
+</div>
+</div>
+<p class="section-intro">从精密机械装配、自然生态群落到可交互空间，所有几何网格、程序化材质与光影均由代码直接生成。点击任意卡片可检视输入参考、三维模型与实时场景。</p>
+</div>
+<div class="showcase-toolbar">
+<div aria-label="选择场景类别" class="showcase-filters" hidden="" role="group">
+<button aria-controls="gallery" aria-pressed="true" class="active" data-gallery-filter="Blender" type="button">
+       Blender
+      </button>
+<button aria-controls="gallery" aria-pressed="false" data-gallery-filter="Three.js" type="button">
+       Three.js
+      </button>
+</div>
+</div>
+<p aria-atomic="true" aria-live="polite" id="gallery-status" role="status">
+</p>
+<div hidden="">
+<button id="replay-demos" type="button">
+      重播视频
+     </button>
+</div>
+<div aria-label="三维场景画廊" class="gallery" id="gallery">
+</div>
+<div hidden="" id="threejs-showcase">
+<div id="threejs-case-grid">
+</div>
+<button hidden="" id="replay-threejs-demos" type="button">
+      重播 Three.js 视频
+     </button>
+</div>
+<button hidden="" id="replay-dataset-demos" type="button">
+     重播场景视频
+    </button>
+</section>
+<section class="section code-section" id="code">
+<div class="section-heading">
+<div class="heading-line">
+<span aria-hidden="true" class="section-number">02</span>
+<div>
+<p class="eyebrow">CODE TO 3D</p>
+<h2>拉开渲染画面，看代码如何搭起三维世界</h2>
+</div>
+</div>
+<p class="section-intro">建筑开间、屋顶坡度、程序化纹理与环境光影全部在代码中显式定义。左侧可直接浏览完整源码，右侧拖动分界线即可对比无材质几何白模与最终渲染画面。</p>
+</div>
+<div class="code-grid">
+<div>
+<div class="code-heading">
+<select aria-label="选择源码案例" id="code-select">
+<option value="chateau">
+         法式城堡
+        </option>
+<option value="newsstand">
+         雨夜报刊亭
+        </option>
+</select>
+<span id="source-count">
+        场景源码
+       </span>
+</div>
+<pre aria-label="所选场景实际源码" id="source-code" tabindex="0">正在加载源码…</pre>
+<a class="text-link" href="demos/chateau/chateau.js" target="_blank">
+       打开完整源码 ↗
+      </a>
+</div>
+<figure>
+<img alt="城堡代码对应的场景渲染图" height="1067" loading="lazy" src="assets/thumbs/02-card.webp" width="1600"/>
+<figcaption>
+       林谷中的法式城堡 · Three.js
+      </figcaption>
+<button class="replay-button" id="code-live">
+       打开实时场景 ↗
+      </button>
+</figure>
+</div>
+</section>
+<section class="section evolution-section" id="evolution">
+<div class="section-heading">
+<div class="heading-line">
+<span aria-hidden="true" class="section-number">03</span>
+<div>
+<p class="eyebrow">200-TURN SCENE CONSTRUCTION</p>
+<h2>从零构建复杂场景实录</h2>
+</div>
+</div>
+<p class="section-intro">在现代岛台厨房重建任务中，原始基座仅执行 14 次视觉检查便在第 101 轮过早停止；微调后模型持续演进 200 轮（累计 84 次视觉自检），依次完成透视校准、柜体装配与光影精修。</p>
+</div>
+<div class="comparison">
+<figure class="comparison-figure">
+<a>
+<img alt="Qwen3.8-27B 微调前后场景构建轨迹对比" height="1024" loading="lazy" src="assets/bmk/kitchen/sft_10.webp" width="2720"/>
+</a>
+</figure>
+</div>
+</section>
+<section class="section generation-section" id="generation">
+<div class="section-heading">
+<div class="heading-line">
+<span aria-hidden="true" class="section-number">04</span>
+<div>
+<p class="eyebrow">FINE-TUNED SCENE GENERATION</p>
+<h2>微调解锁强大的多场景三维构建能力</h2>
+</div>
+</div>
+<p class="section-intro">经 3DCodeFactory 微调后，模型在多物体空间布局、部件级交互控制、微观几何纹理与全局光影上表现出色。</p>
+</div>
+<figure class="generation-stage">
+<video aria-label="微调后模型复杂三维场景生成展示" controls="" id="generation-video" loop="" muted="" playsinline="" poster="assets/scene-generation-showcase-poster.png" preload="metadata" src="assets/videos/scene-generation-showcase.mp4?v=ebe7c24f90e4"></video>
+</figure>
+</section>
+<section class="section method" id="method">
+<div class="section-heading">
+<div class="heading-line">
+<span aria-hidden="true" class="section-number">05</span>
+<div>
+<p class="eyebrow">DATA ENGINE</p>
+<h2>全自动的复杂三维数据合成与验证框架</h2>
+</div>
+</div>
+<p class="section-intro">从自然语言出发合成视觉参考图与结构化任务，驱动智能体在渲染沙箱中多轮演进，并通过从视觉到功能的多项验收保障数据质量。</p>
+</div>
+<div class="steps">
+<article>
+<span>
+       01
+      </span>
+<h3>
+       语料清洗与锚点合成
+      </h3>
+<p>
+       对大规模文本语料去重与分类对齐，生成候选图像并滤除透视畸变样本，确立无歧义的空间布局参照。
+      </p>
+</article>
+<article>
+<span>
+       02
+      </span>
+<h3>
+       任务规格与评分准则
+      </h3>
+<p>
+       协同多智能体将视觉锚点解析为场景设定、几何规格与交互需求，同步生成任务专属的三档评分细则。
+      </p>
+</article>
+<article>
+<span>
+       03
+      </span>
+<h3>
+       沙箱多轮演进
+      </h3>
+<p>
+       智能体在 Blender 或无头浏览器沙箱中交替执行编码、渲染采样与视觉自检，针对穿模与比例偏差迭代修正。
+      </p>
+</article>
+<article>
+<span>
+       04
+      </span>
+<h3>
+       多维联合验证
+      </h3>
+<p>
+       结合多视角视觉评审、脚本化网格拓扑检查与自动化交互测试，执行多维合取门控，筛选高分轨迹入库。
+      </p>
+</article>
+</div>
+<div class="figure-pair">
+<div class="method-synthesis stage-card">
+<div class="method-explainer">
+<p class="eyebrow">
+        TASK SYNTHESIS
+       </p>
+<h3>
+        从自然语言文本，演变为可无限扩展的 3D 任务
+       </h3>
+<p>
+<span class="method-copy-group">通过需求、准则与审计智能体协同，将参考图解耦为上下文、几何规格与交互功能；</span><span class="method-copy-group">同步构建严格对齐的视觉、规格与功能三档判据，确保每项要求均可客观核验。</span>
+</p>
+</div>
+<div class="synthesis-animation" id="task-synthesis-animation" data-static="true"><svg aria-labelledby="syn-title" class="syn-canvas" role="img" viewBox="-24 40 1160 640" xmlns="http://www.w3.org/2000/svg"><title id="syn-title">Task synthesis: query preparation, reference screening, requirements, rubrics and audit</title><defs><marker id="syn-arrowhead" markerHeight="5" markerWidth="5" orient="auto" refX="8" refY="5" viewBox="0 0 10 10"><path d="M1 1L9 5 1 9" fill="none" stroke="#889b96" stroke-width="1.5"/></marker><clipPath clipPathUnits="userSpaceOnUse" id="syn-raw-clip"><rect height="120" width="125" x="25" y="180"/></clipPath><clipPath clipPathUnits="userSpaceOnUse" id="syn-aligned-clip"><rect height="120" width="125" x="414" y="180"/></clipPath><clipPath id="syn-csf-0"><rect height="208" width="851" x="52" y="983"/></clipPath><clipPath id="syn-csf-1"><rect height="207" width="851" x="52" y="1191"/></clipPath><clipPath id="syn-csf-2"><rect height="196" width="851" x="52" y="1398"/></clipPath><mask height="170" id="syn-route-mask" maskUnits="userSpaceOnUse" width="967" x="145" y="220"><path class="syn-route-reveal" d="M989 230H1092Q1104 230 1104 242V344Q1104 356 1092 356H167Q155 356 155 368V383" fill="none" pathLength="1000" stroke="white" stroke-width="16"/></mask></defs><g class="syn-closing-frame"><rect fill="none" height="630" rx="16" stroke="#b6cfc2" stroke-width="1.4" width="1128" x="-8" y="31"/><rect fill="white" height="39" width="314" x="399" y="12"/></g><text class="syn-closing-title" fill="#243b32" font-size="29" font-weight="700" text-anchor="middle" x="556" y="40">Task Synthesis</text><g class="syn-stage" data-syn-stage="0"><g class="syn-motion syn-fade" style="--delay:0.12s"><text fill="#27393c" font-size="16" font-weight="500" text-anchor="middle" x="87" y="96">Raw Corpora</text></g><g class="syn-motion syn-pop" style="--delay:0.0s"><image height="38" href="assets/bmk/method/icon_hf.webp" preserveAspectRatio="xMidYMid slice" width="38" x="23" y="111"/></g><g class="syn-motion syn-pop" style="--delay:0.08s"><image height="38" href="assets/bmk/method/icon_amazon.webp" preserveAspectRatio="xMidYMid slice" width="38" x="67" y="111"/></g><g class="syn-motion syn-pop" style="--delay:0.16s"><image height="38" href="assets/bmk/method/icon_wikipedia.webp" preserveAspectRatio="xMidYMid slice" width="38" x="111" y="111"/></g><g class="syn-motion syn-fade" style="--delay:0.12s"><path d="M25 187V301H150" fill="none" stroke="#27393c" stroke-width="2"/></g><g class="syn-motion syn-fade" style="--delay:0.12s"><path d="M28 238.3H150" stroke="#a7c2b9" stroke-dasharray="4 4"/></g><g clip-path="url(#syn-raw-clip)"><g class="syn-motion syn-bar" style="--delay:0.2s;transform-origin:39.8px 301px"><rect fill="#83bdad" height="96.89999999999999" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="30.0" y="204.10000000000002"/></g></g><g clip-path="url(#syn-raw-clip)"><g class="syn-motion syn-bar" style="--delay:0.29000000000000004s;transform-origin:62.400000000000006px 301px"><rect fill="#9acbbb" height="76.38000000000001" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="52.6" y="224.62"/></g></g><g clip-path="url(#syn-raw-clip)"><g class="syn-motion syn-bar" style="--delay:0.38s;transform-origin:85.0px 301px"><rect fill="#b0d8ca" height="55.86" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="75.2" y="245.14"/></g></g><g clip-path="url(#syn-raw-clip)"><g class="syn-motion syn-bar" style="--delay:0.47000000000000003s;transform-origin:107.60000000000001px 301px"><rect fill="#c5e3d8" height="35.339999999999996" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="97.80000000000001" y="265.66"/></g></g><g clip-path="url(#syn-raw-clip)"><g class="syn-motion syn-bar" style="--delay:0.56s;transform-origin:130.20000000000002px 301px"><rect fill="#d9eee6" height="18.240000000000002" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="120.4" y="282.76"/></g></g><g class="syn-motion syn-fade" style="--delay:0.12s"><text fill="#27393c" font-size="18" font-weight="400" text-anchor="end" x="136" y="202">pᵣₐw</text></g><path d="M25 187V301H150" fill="none" stroke="#27393c" stroke-width="2"/></g><g class="syn-stage" data-syn-stage="1"><g class="syn-motion syn-fade" style="--delay:0.1s"><svg height="23" viewBox="0 0 24 24" width="23" x="183" y="179"><g fill="none" stroke="#27393c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"><path d="M3 4h18l-7 8v8l-4-2v-6z"/></g></svg></g><g class="syn-motion syn-fade" style="--delay:0.1s"><text fill="#27393c" font-size="12" font-weight="400" text-anchor="start" x="214" y="198">Dedup.</text></g><g class="syn-motion syn-fade" style="--delay:0.35s"><svg height="23" viewBox="0 0 24 24" width="23" x="279" y="179"><g fill="none" stroke="#27393c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"><path d="M12 3v3M3 12H1m22 0h-2"/><rect height="14" rx="5" width="16" x="4" y="6"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 16q4 3 8 0"/></g></svg></g><g class="syn-motion syn-fade" style="--delay:0.35s"><text fill="#27393c" font-size="12" font-weight="400" text-anchor="start" x="310" y="198">LLM Pre-Tag</text></g><g class="syn-motion syn-connector" style="--delay:0s"><path d="M171 221H395" marker-end="url(#syn-arrowhead)" stroke="#889b96" stroke-width="2"/></g><g class="syn-motion syn-fade" style="--delay:0.6s"><svg height="23" viewBox="0 0 24 24" width="23" x="209" y="240"><g fill="none" stroke="#27393c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"><path d="M12 21V5M4 5v7h16V5M4 12v3m16-3v3"/><circle cx="4" cy="3" r="2"/><circle cx="12" cy="3" r="2"/><circle cx="20" cy="3" r="2"/></g></svg></g><g class="syn-motion syn-fade" style="--delay:0.6s"><text fill="#27393c" font-size="13" font-weight="400" text-anchor="start" x="240" y="259">Taxonomy Align</text></g></g><g class="syn-stage" data-syn-stage="2"><g class="syn-motion syn-fade" style="--delay:0.12s"><text fill="#27393c" font-size="16" font-weight="500" text-anchor="middle" x="476" y="96">Aligned Queries</text></g><g class="syn-motion syn-fade" style="--delay:0.12s"><svg height="42" viewBox="0 0 24 24" width="42" x="455" y="111"><g fill="none" stroke="#27393c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"><rect height="18" rx="2" width="15" x="5" y="3"/><path d="M8 8h9M8 12h9M8 16h6"/></g></svg></g><g class="syn-motion syn-fade" style="--delay:0.12s"><path d="M414 187V301H539" fill="none" stroke="#27393c" stroke-width="2"/></g><g class="syn-motion syn-fade" style="--delay:0.12s"><path d="M417 238.3H539" stroke="#a7c2b9" stroke-dasharray="4 4"/></g><g clip-path="url(#syn-aligned-clip)"><g class="syn-motion syn-balance" style="--delay:0.3s;--from:1.6037735849056602;transform-origin:428.8px 301px"><rect fill="#acd7ca" height="60.42" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="419.0" y="240.57999999999998"/></g></g><g clip-path="url(#syn-aligned-clip)"><g class="syn-motion syn-balance" style="--delay:0.3s;--from:1.1754385964912282;transform-origin:451.40000000000003px 301px"><rect fill="#acd7ca" height="64.97999999999999" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="441.6" y="236.02"/></g></g><g clip-path="url(#syn-aligned-clip)"><g class="syn-motion syn-balance" style="--delay:0.3s;--from:0.9423076923076923;transform-origin:474.0px 301px"><rect fill="#acd7ca" height="59.28" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="464.2" y="241.72"/></g></g><g clip-path="url(#syn-aligned-clip)"><g class="syn-motion syn-balance" style="--delay:0.3s;--from:0.5636363636363636;transform-origin:496.6px 301px"><rect fill="#acd7ca" height="62.7" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="486.8" y="238.3"/></g></g><g clip-path="url(#syn-aligned-clip)"><g class="syn-motion syn-balance" style="--delay:0.3s;--from:0.3018867924528302;transform-origin:519.1999999999999px 301px"><rect fill="#acd7ca" height="60.42" rx="1" stroke="#83b3a5" stroke-width=".8" width="19.6" x="509.4" y="240.57999999999998"/></g></g><g class="syn-motion syn-fade" style="--delay:0.12s"><text fill="#27393c" font-size="18" font-weight="400" text-anchor="end" x="525" y="202">p₃ᴅ</text></g><path d="M414 187V301H539" fill="none" stroke="#27393c" stroke-width="2"/></g><g class="syn-stage" data-syn-stage="3"><g class="syn-motion syn-pop" style="--delay:0.1s"><svg height="40" viewBox="1366 395 72 72" width="40" x="667.5" y="114"><image height="1640" href="assets/task-synthesis.webp" width="2400"/></svg></g><g class="syn-motion syn-pop" style="--delay:0.1s"><text fill="#27393c" font-size="16" font-weight="500" text-anchor="middle" x="687.5" y="176">Image 2.5</text></g><g class="syn-motion syn-fade" style="--delay:0.4s"><svg height="20" viewBox="0 0 24 24" width="20" x="600" y="240"><g fill="none" stroke="#27393c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"><path d="M2 21h20M5 20v-7h3v7m3 0V5h3v15m3 0V9h3v11"/></g></svg></g><g class="syn-motion syn-fade" style="--delay:0.4s"><text fill="#27393c" font-size="13" font-weight="400" text-anchor="start" x="627" y="256">Histogram</text></g><g class="syn-motion syn-fade" style="--delay:0.65s"><svg height="20" viewBox="0 0 24 24" width="20" x="704" y="240"><g fill="none" stroke="#27393c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"><rect height="16" rx="3" width="20" x="2" y="4"/><path d="M9 4v16" stroke-dasharray="2 2"/><circle cx="15" cy="12" r="3"/></g></svg></g><g class="syn-motion syn-fade" style="--delay:0.65s"><text fill="#27393c" font-size="13" font-weight="400" text-anchor="start" x="731" y="256">Saliency</text></g><g class="syn-motion syn-connector" style="--delay:0s"><path d="M574 208H801" marker-end="url(#syn-arrowhead)" stroke="#889b96" stroke-width="2"/></g></g><g class="syn-stage" data-syn-stage="4"><g class="syn-candidate syn-candidate-reject" style="--appear-delay:0.0s;--judge-delay:0.8s"><image class="syn-rejected-photo" height="70" href="assets/bmk/method/rej_dark.webp" preserveAspectRatio="xMidYMid slice" width="174" x="815" y="93"/><rect class="syn-rejected-border" fill="none" height="70" rx="3" stroke="#c5d4cd" stroke-width="1" width="174" x="815" y="93"/><g class="syn-candidate-badge"><rect fill="#f7e5e3" height="24" rx="12" stroke="#e9bfba" stroke-width=".7" width="86" x="1001" y="116"/><path d="M1011 125l6 6m0-6l-6 6" fill="none" stroke="#b14e46" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><text dy=".35em" fill="#a3443d" font-size="12" x="1026" y="128">Too dark</text></g></g><g class="syn-candidate syn-candidate-accept" style="--appear-delay:1.6s;--judge-delay:2.4000000000000004s"><image class="syn-selected-photo" height="70" href="assets/bmk/method/u7_ref.webp" preserveAspectRatio="xMidYMid slice" width="174" x="815" y="173"/><rect class="syn-selected-border" fill="none" height="70" rx="3" stroke="#c5d4cd" stroke-width="1" width="174" x="815" y="173"/><g class="syn-candidate-badge syn-selected-badge"><rect fill="#e4f0e9" height="24" rx="12" stroke="#c0d7ca" stroke-width=".7" width="86" x="1001" y="196"/><path d="M1010 208l2.7 3 5.5-6" fill="none" stroke="#477e6b" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><text dy=".35em" fill="#47735e" font-size="12" x="1026" y="208">Accepted</text></g></g><g class="syn-candidate syn-candidate-reject" style="--appear-delay:3.2s;--judge-delay:4.0s"><image class="syn-rejected-photo" height="70" href="assets/bmk/method/rej_broken.webp" preserveAspectRatio="xMidYMid slice" width="174" x="815" y="253"/><rect class="syn-rejected-border" fill="none" height="70" rx="3" stroke="#c5d4cd" stroke-width="1" width="174" x="815" y="253"/><g class="syn-candidate-badge"><rect fill="#f7e5e3" height="24" rx="12" stroke="#e9bfba" stroke-width=".7" width="86" x="1001" y="276"/><path d="M1011 285l6 6m0-6l-6 6" fill="none" stroke="#b14e46" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><text dy=".35em" fill="#a3443d" font-size="12" x="1026" y="288">Broken</text></g></g></g><g class="syn-stage" data-syn-stage="5"><g class="syn-motion syn-slide" style="--delay:0.15s"><svg height="245" preserveAspectRatio="none" viewBox="52 983 851 611" width="310" x="0" y="390"><g clip-path="url(#syn-csf-0)"><image height="1640" href="assets/task-synthesis.webp" width="2400"/></g></svg></g><g class="syn-motion syn-slide" style="--delay:0.44999999999999996s"><svg height="245" preserveAspectRatio="none" viewBox="52 983 851 611" width="310" x="0" y="390"><g clip-path="url(#syn-csf-1)"><image height="1640" href="assets/task-synthesis.webp" width="2400"/></g></svg></g><g class="syn-motion syn-slide" style="--delay:0.75s"><svg height="245" preserveAspectRatio="none" viewBox="52 983 851 611" width="310" x="0" y="390"><g clip-path="url(#syn-csf-2)"><image height="1640" href="assets/task-synthesis.webp" width="2400"/></g></svg></g></g><g class="syn-stage" data-syn-stage="6"><g class="syn-motion syn-robot" style="--delay:0.1s"><svg height="36" viewBox="0 0 48 48" width="36" x="362" y="452"><g fill="white" stroke="#27393c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 7V3"/><circle cx="20" cy="3" r="2"/><rect height="25" rx="8" width="30" x="5" y="9"/><path d="M5 20H2m33 0h3"/><circle cx="14" cy="19" r="2"/><circle cx="26" cy="19" r="2"/><path d="M14 27h12"/><rect fill="#edf5f0" height="19" rx="2" width="16" x="28" y="26"/><path d="M32 31h8m-8 5h8m-8 5h5"/></g></svg></g><g class="syn-motion syn-fade" style="--delay:0.12s"><text fill="#27393c" font-size="13" font-weight="500" text-anchor="middle" x="380" y="551">Rubric Agent</text></g><g class="syn-motion syn-connector" style="--delay:0s"><path d="M321 512H439" marker-end="url(#syn-arrowhead)" stroke="#889b96" stroke-width="2"/></g><g class="syn-motion syn-fade" style="--delay:0.65s"><svg height="245" preserveAspectRatio="none" viewBox="994 983 804 611" width="300" x="450" y="390"><image height="1640" href="assets/task-synthesis.webp" width="2400"/></svg></g></g><g class="syn-stage" data-syn-stage="7"><g class="syn-motion syn-robot" style="--delay:0.1s"><svg height="36" viewBox="0 0 48 48" width="36" x="809" y="452"><g fill="white" stroke="#27393c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 8L9 3m20 5 3-5"/><rect height="25" rx="4" width="31" x="5" y="9"/><rect fill="#edf5f0" height="9" rx="4" width="21" x="10" y="15"/><path d="M15 19h1m9 0h1M15 29h10"/><path d="M35 25l10 4v7c0 6-10 10-10 10s-10-4-10-10v-7z" fill="#e0eee6"/><path d="M30 35l4 4 7-8" stroke="#518b76"/></g></svg></g><g class="syn-motion syn-fade" style="--delay:0.12s"><text fill="#27393c" font-size="13" font-weight="500" text-anchor="middle" x="827" y="551">Audit Agent</text></g><g class="syn-motion syn-connector" style="--delay:0s"><path d="M761 512H894" marker-end="url(#syn-arrowhead)" stroke="#889b96" stroke-width="2"/></g><g class="syn-motion syn-fade" style="--delay:0.65s"><svg height="245" preserveAspectRatio="none" viewBox="1888 983 462 611" width="207" x="905" y="390"><image height="1640" href="assets/task-synthesis.webp" width="2400"/></svg></g></g><g aria-hidden="true" class="syn-handoff"><path d="M989 230H1092Q1104 230 1104 242V344Q1104 356 1092 356H167Q155 356 155 368V383" fill="none" marker-end="url(#syn-arrowhead)" mask="url(#syn-route-mask)" stroke="#82ae9f" stroke-dasharray="5 5" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/><g class="syn-handoff-robot"><rect fill="white" height="38" rx="9" width="38" x="610.5" y="337"/><svg height="32" viewBox="0 0 48 48" width="32" x="614.1666666666666" y="340"><g fill="white" stroke="#27393c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 7V3"/><circle cx="20" cy="3" r="2"/><rect height="25" rx="8" width="30" x="5" y="9"/><path d="M5 20H2m33 0h3"/><circle cx="14" cy="19" r="2"/><circle cx="26" cy="19" r="2"/><path d="M14 27h12"/><rect fill="#edf5f0" height="19" rx="2" width="16" x="28" y="26"/><path d="M32 31h8m-8 5h8m-8 5h5"/></g></svg><text fill="#56746a" font-size="12" text-anchor="middle" x="629.5" y="386">Requirement Agent</text></g></g></svg><div class="syn-controls"><button type="button" data-syn-play aria-label="播放任务合成动画" title="播放">▷</button><button type="button" data-syn-replay aria-label="重播任务合成动画" title="重播">↻</button></div></div>
+</div>
+<article class="stage-card">
+<div class="flow-intro">
+<div>
+<p class="eyebrow">
+             ROLLOUT AND VERIFICATION
+            </p>
+<h3>
+             从视觉到功能的多项验收，确保数据质量
+            </h3>
+</div>
+<p>
+<span class="method-copy-group">采集阶段完整记录智能体的代码编写、报错恢复与多视角视觉自检轨迹；</span><span class="method-copy-group">验证阶段联合多视角 VLM 评审、场景图几何校验与自动化交互测试，执行严格门控筛选。</span>
+</p>
+</div>
+<div class="rollout-animation" id="rollout-animation" data-static="true"><svg class="roll-canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2432 720" role="img" aria-label="Sandbox rollout, agentic verification and dataset curation"><defs><symbol id="roll-ic-deepseek" viewBox="0 0 24 18">
+          <path fill="#3B6CF6" d="M22.92 1.43C22.67 1.31 22.57 1.54 22.42 1.66C22.37 1.69 22.33 1.74 22.29 1.79C21.93 2.17 21.51 2.42 20.97 2.39C20.17 2.35 19.48 2.60 18.88 3.21C18.75 2.46 18.32 2.00 17.67 1.72C17.34 1.57 16.99 1.42 16.75 1.09C16.59 0.86 16.54 0.60 16.46 0.34C16.41 0.19 16.35 0.03 16.18 0.00C15.98 -0.03 15.91 0.14 15.83 0.27C15.53 0.82 15.41 1.43 15.43 2.05C15.45 3.43 16.04 4.54 17.20 5.32C17.33 5.41 17.37 5.50 17.32 5.63C17.24 5.90 17.15 6.16 17.07 6.44C17.01 6.61 16.94 6.65 16.75 6.57C16.11 6.30 15.56 5.91 15.07 5.43C14.25 4.63 13.50 3.75 12.57 3.06C12.35 2.90 12.13 2.75 11.90 2.61C10.95 1.68 12.03 0.92 12.28 0.83C12.54 0.74 12.37 0.42 11.53 0.42C10.68 0.42 9.91 0.71 8.93 1.08C8.79 1.14 8.64 1.18 8.48 1.21C7.59 1.04 6.67 1.01 5.70 1.12C3.88 1.32 2.43 2.18 1.36 3.65C0.08 5.41 -0.22 7.42 0.15 9.51C0.54 11.71 1.66 13.54 3.39 14.96C5.18 16.44 7.25 17.17 9.60 17.03C11.03 16.94 12.62 16.75 14.42 15.23C14.87 15.46 15.35 15.55 16.14 15.62C16.75 15.67 17.33 15.59 17.78 15.49C18.49 15.34 18.44 14.68 18.19 14.56C16.11 13.60 16.56 13.99 16.15 13.67C17.21 12.42 18.82 10.20 19.32 7.17C19.37 6.84 19.43 6.37 19.42 6.10C19.42 5.93 19.46 5.87 19.64 5.85C20.17 5.79 20.67 5.65 21.14 5.39C22.48 4.66 23.03 3.45 23.15 2.00C23.17 1.78 23.15 1.55 22.92 1.43ZM11.17 14.47C9.16 12.89 8.18 12.37 7.78 12.39C7.40 12.41 7.47 12.84 7.55 13.13C7.64 13.40 7.75 13.60 7.91 13.84C8.02 14.00 8.10 14.24 7.80 14.42C7.15 14.82 6.02 14.29 5.97 14.26C4.66 13.49 3.56 12.47 2.78 11.07C2.04 9.72 1.60 8.28 1.53 6.74C1.51 6.37 1.62 6.24 1.99 6.17C2.48 6.08 2.98 6.06 3.47 6.14C5.52 6.44 7.28 7.36 8.74 8.81C9.58 9.64 10.22 10.63 10.87 11.60C11.56 12.63 12.31 13.61 13.26 14.41C13.60 14.70 13.87 14.91 14.12 15.07C13.35 15.15 12.06 15.17 11.17 14.47ZM12.14 8.26C12.14 8.09 12.27 7.96 12.44 7.96C12.60 7.96 12.73 8.09 12.73 8.26C12.73 8.42 12.60 8.56 12.44 8.56C12.27 8.56 12.14 8.42 12.14 8.26Z"/>
+        </symbol><symbol id="roll-ic-claude" viewBox="0 0 22 18">
+          <rect x="4" y="3.8" width="14" height="8.6" rx=".8" fill="#DA7756"/>
+          <rect x="1.6" y="7.2" width="2.6" height="2.8" rx=".4" fill="#DA7756"/>
+          <rect x="17.8" y="7.2" width="2.6" height="2.8" rx=".4" fill="#DA7756"/>
+          <rect x="5.4" y="12.2" width="1.4" height="2.8" rx=".3" fill="#DA7756"/>
+          <rect x="7.9" y="12.2" width="1.4" height="2.8" rx=".3" fill="#DA7756"/>
+          <rect x="12.7" y="12.2" width="1.4" height="2.8" rx=".3" fill="#DA7756"/>
+          <rect x="15.2" y="12.2" width="1.4" height="2.8" rx=".3" fill="#DA7756"/>
+          <rect x="6.6" y="6.4" width="1.35" height="2.6" rx=".2" fill="#FFF"/>
+          <rect x="14.05" y="6.4" width="1.35" height="2.6" rx=".2" fill="#FFF"/>
+        </symbol><symbol id="roll-ic-blender" viewBox="0 0 24 22">
+          <path d="M10.2 3L18.4 9.2M3.8 8.2H14.5M2.4 14.8L10.2 9.4" stroke="#EA7600" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="14.6" cy="13.2" r="6.2" fill="#EA7600"/>
+          <circle cx="14.6" cy="13.2" r="3.8" fill="#FFF"/>
+          <circle cx="14.6" cy="13.2" r="2.2" fill="#265787"/>
+        </symbol><symbol id="roll-ic-threejs" viewBox="0 0 22 22">
+          <g stroke="#1E293B" stroke-width="1.35" stroke-linejoin="round" fill="none">
+            <polygon points="3,2.4 19.8,6.8 7.4,19.8"/>
+            <polygon points="11.4,4.6 13.6,13.3 5.2,11.1"/>
+            <line x1="3" y1="2.4" x2="13.6" y2="13.3"/>
+            <line x1="19.8" y1="6.8" x2="5.2" y2="11.1"/>
+            <line x1="7.4" y1="19.8" x2="11.4" y2="4.6"/>
+          </g>
+        </symbol><marker id="roll-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto-start-reverse"><path d="M0 1L10 5L0 9Z" fill="#293746"/></marker><marker id="roll-arrow-small" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1L10 5L0 9Z" fill="#293746"/></marker></defs><g class="roll-stage" data-roll-stage="0"><rect x="30" y="24" width="480" height="672" fill="#f8fafa" stroke="#9ba9b7" stroke-width="1.6" rx="9"/><text x="270.0" y="69" font-size="27" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">Task Input</text><path d="M50 85L490 85" fill="none" stroke="#34404d" stroke-width="1.4"/></g><g class="roll-stage" data-roll-stage="input-summary" data-roll-start="1800"><g class="roll-item" style="--delay:0s"><svg x="50" y="100" width="158" height="115" viewBox="50 100 158 115" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg><text x="221" y="126" font-size="25" font-weight="400" text-anchor="start" fill="#111" font-style="italic">x = (I, C, S, F)</text><text x="219" y="165" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Modes: Replica, Design, Interact</text><text x="219" y="205" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Output: .html, .blend, .glb, ...</text></g></g><g class="roll-stage" data-roll-stage="1"><g class="roll-item" style="--delay:0.0s"><rect x="51" y="232" width="438" height="103" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="65" y="262" font-size="20" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Context (<tspan font-style="italic">C</tspan>)</text><path d="M63 271L477 271" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="64" y="298" font-size="17" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Build a Three.js interior preview of the Baroque</text><text x="64" y="326" font-size="17" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Hall of Mirrors for museum renovation review...</text></g><g class="roll-item" style="--delay:0.4s"><rect x="51" y="348" width="438" height="165" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="65" y="378" font-size="20" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Specification (<tspan font-style="italic">S</tspan>)</text><path d="M63 387L477 387" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="64" y="414" font-size="17" font-weight="400" text-anchor="start" fill="#111" font-style="normal">18.0 × 8.2 × 7.8 m hall with barrel-vaulted ceiling</text><text x="64" y="442" font-size="17" font-weight="400" text-anchor="start" fill="#111" font-style="normal">6 crystal chandeliers, 12 gilded pilasters</text><text x="64" y="470" font-size="17" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Gold leaf (M=1.0, R=0.18), polished marble tiles</text><text x="64" y="498" font-size="17" font-weight="400" text-anchor="start" fill="#111" font-style="normal">24 mm main camera at 1.65 m eye height</text></g><g class="roll-item" style="--delay:0.8s"><rect x="51" y="527" width="438" height="147" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="65" y="557" font-size="20" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Function (<tspan font-style="italic">F</tspan>)</text><path d="M63 566L477 566" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="64" y="593" font-size="17" font-weight="400" text-anchor="start" fill="#111" font-style="normal">F1: Adjust sunlight elevation and bloom intensity</text><text x="64" y="621" font-size="17" font-weight="400" text-anchor="start" fill="#111" font-style="normal">F2: Switch between main and close-up views</text><text x="64" y="649" font-size="17" font-weight="400" text-anchor="start" fill="#111" font-style="normal">F3: Open or close the arched mirror doors</text></g></g><g class="roll-stage" data-roll-stage="2"><path class="roll-arrow" d="M515 360L545 360" fill="none" stroke="#293746" stroke-width="3" marker-end="url(#roll-arrow)"/><rect x="552" y="24" width="462" height="672" fill="#f8fafa" stroke="#26323e" stroke-width="3" rx="9"/><text x="783.0" y="69" font-size="27" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">Sandbox Rollout</text><path d="M572 85L994 85" fill="none" stroke="#34404d" stroke-width="1.4"/></g><g class="roll-stage" data-roll-stage="sandbox-inner" data-roll-start="6700"><rect x="570" y="100" width="426" height="410" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="584" y="130" font-size="20" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Rollout Environment</text><path d="M582 139L984 139" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/></g><g class="roll-stage" data-roll-stage="sandbox-models" data-roll-start="7900"><g class="roll-item" style="--delay:0s"><svg x="590" y="148" width="26" height="26"><use href="#roll-ic-deepseek" width="26" height="26"/></svg><text x="628" y="169" font-size="15" font-weight="400" text-anchor="start" fill="#111" font-style="normal">DeepSeek-V4.1-Flash</text><svg x="795" y="148" width="26" height="26"><use href="#roll-ic-claude" width="26" height="26"/></svg><text x="833" y="169" font-size="15" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Claude Code 2.1.251</text><svg x="590" y="181" width="26" height="26"><use href="#roll-ic-blender" width="26" height="26"/></svg><text x="628" y="202" font-size="15" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Blender 4.2.10</text><svg x="795" y="181" width="26" height="26"><use href="#roll-ic-threejs" width="26" height="26"/></svg><text x="833" y="202" font-size="15" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Three.js r180, ...</text></g></g><g class="roll-stage" data-roll-stage="sandbox-tools" data-roll-start="9100"><g class="roll-item" style="--delay:0s"><path d="M584 216L980 216" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="595" y="245" font-size="19" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Sandbox Actions</text><text x="595" y="274" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">execute_scene_code</text><text x="595" y="302" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">get_scene_hierarchy</text><text x="595" y="330" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">capture_viewport</text><text x="595" y="358" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">trigger_ui_control</text><text x="595" y="386" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">...</text></g><g class="roll-item" style="--delay:0.55s"><text x="595" y="429" font-size="19" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Libraries</text><text x="595" y="457" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Python bpy, Playwright,</text><text x="595" y="485" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">WebGL, trimesh, ...</text></g></g><g class="roll-stage" data-roll-stage="3"><g class="roll-item" style="--delay:0s"><text x="833" y="271" font-size="17" font-weight="400" text-anchor="end" fill="#111" font-style="normal">Draft</text><svg x="853" y="228" width="115" height="75" viewBox="853 228 115 75" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g></g><g class="roll-stage" data-roll-stage="4"><g class="roll-item" style="--delay:0s"><text x="833" y="364" font-size="17" font-weight="400" text-anchor="end" fill="#111" font-style="normal">Refine</text><svg x="853" y="321" width="115" height="75" viewBox="853 321 115 75" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg><path class="roll-arrow" d="M814 280L814 346" fill="none" stroke="#293746" stroke-width="1.6" marker-end="url(#roll-arrow-small)"/></g></g><g class="roll-stage" data-roll-stage="5"><g class="roll-item" style="--delay:0s"><text x="833" y="457" font-size="17" font-weight="400" text-anchor="end" fill="#111" font-style="normal">Final</text><svg x="853" y="414" width="115" height="75" viewBox="853 414 115 75" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg><path class="roll-arrow" d="M814 373L814 439" fill="none" stroke="#293746" stroke-width="1.6" marker-end="url(#roll-arrow-small)"/></g></g><g class="roll-stage" data-roll-stage="6"><path class="roll-arrow" d="M783 514L783 543" fill="none" stroke="#293746" stroke-width="1.6" marker-end="url(#roll-arrow-small)"/><rect x="570" y="549" width="426" height="128" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="783.0" y="579" font-size="20" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">Deliverables (P<tspan baseline-shift="sub" font-size="14">T</tspan>, τ)</text><path d="M582 588L984 588" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><g class="roll-item" style="--delay:0.0s"><svg x="585" y="596" width="80" height="44" viewBox="585 596 80 44" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg><text x="625.0" y="660" font-size="16" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Workspace</text></g><g class="roll-item" style="--delay:0.2s"><svg x="690" y="596" width="70" height="44" viewBox="690 596 70 44" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg><text x="725.0" y="660" font-size="16" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">.glb, .html</text></g><g class="roll-item" style="--delay:0.4s"><svg x="802" y="596" width="70" height="44" viewBox="802 596 70 44" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg><text x="837.0" y="660" font-size="16" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Images</text></g><g class="roll-item" style="--delay:0.6000000000000001s"><svg x="904" y="596" width="78" height="44" viewBox="904 596 78 44" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg><text x="943.0" y="660" font-size="16" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Trajectory</text></g></g><g class="roll-stage" data-roll-stage="7"><path class="roll-arrow" d="M1019 360L1048 360" fill="none" stroke="#293746" stroke-width="3" marker-end="url(#roll-arrow)"/><rect x="1055" y="24" width="944" height="672" fill="#f8fafa" stroke="#26323e" stroke-width="3" rx="9"/><text x="1527.0" y="69" font-size="27" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">Agentic Verification</text><path d="M1075 85L1979 85" fill="none" stroke="#34404d" stroke-width="1.4"/></g><g class="roll-stage" data-roll-stage="capture-group" data-roll-start="19200"><rect x="1077" y="100" width="900" height="325" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="1092" y="132" font-size="20" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Camera Capture</text><path d="M1092 142L1417 142" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="1092" y="170" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">rotate_cam, zoom_in, capture_view, ...</text><path d="M1427 159L1427 406" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="1113" y="227" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Reference</text><svg x="1204" y="199" width="63" height="43" viewBox="1204 199 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g><g class="roll-stage" data-roll-stage="8"><text x="1113" y="278" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Global</text><g class="roll-item" style="--delay:0.0s"><svg x="1204" y="251" width="63" height="43" viewBox="1204 251 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g><g class="roll-item" style="--delay:0.3s"><svg x="1274" y="251" width="63" height="43" viewBox="1274 251 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g><g class="roll-item" style="--delay:0.6s"><svg x="1344" y="251" width="63" height="43" viewBox="1344 251 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g></g><g class="roll-stage" data-roll-stage="9"><text x="1113" y="330" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Target</text><g class="roll-item" style="--delay:0.0s"><svg x="1204" y="303" width="63" height="43" viewBox="1204 303 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g><g class="roll-item" style="--delay:0.3s"><svg x="1274" y="303" width="63" height="43" viewBox="1274 303 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g><g class="roll-item" style="--delay:0.6s"><svg x="1344" y="303" width="63" height="43" viewBox="1344 303 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g></g><g class="roll-stage" data-roll-stage="10"><text x="1113" y="381" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Detail</text><g class="roll-item" style="--delay:0.0s"><svg x="1204" y="354" width="63" height="43" viewBox="1204 354 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g><g class="roll-item" style="--delay:0.3s"><svg x="1274" y="354" width="63" height="43" viewBox="1274 354 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g><g class="roll-item" style="--delay:0.6s"><svg x="1344" y="354" width="63" height="43" viewBox="1344 354 63 43" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg></g></g><g class="roll-stage" data-roll-stage="11"><text x="1445" y="132" font-size="20" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Visual Judge</text><text x="1565" y="132" font-size="15" font-weight="400" text-anchor="start" fill="#111" font-style="normal">(Isolated VLM)</text><text x="1958" y="131" font-size="15" font-weight="400" text-anchor="end" fill="#111" font-style="normal">Calibrated Score: s<tspan baseline-shift="sub" font-size="11">vis</tspan></text><path d="M1443 142L1964 142" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><path d="M1704 159L1704 406" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="1569.5" y="181" font-size="17" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">Rubric Score</text><path d="M1453 191L1686 191" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><path d="M1453 361L1686 361" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="1837.0" y="181" font-size="17" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">Aesthetic Score</text><path d="M1718 191L1956 191" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><path d="M1718 361L1956 361" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><g class="roll-item" style="--delay:0.3s"><rect x="1454" y="212" width="14" height="14" fill="#e8f1ed" stroke="#608c79" stroke-width="1.4" rx="7"/><path d="M1457 219l3 3 5-6" fill="none" stroke="#608c79" stroke-width="2" stroke-linecap="round"/><text x="1473" y="224" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Vaulted 5-bay hall</text></g><g class="roll-item" style="--delay:0.8500000000000001s"><rect x="1454" y="248" width="14" height="14" fill="#e8f1ed" stroke="#608c79" stroke-width="1.4" rx="7"/><path d="M1457 255l3 3 5-6" fill="none" stroke="#608c79" stroke-width="2" stroke-linecap="round"/><text x="1473" y="260" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Chandeliers (×6)</text></g><g class="roll-item" style="--delay:1.4000000000000001s"><rect x="1454" y="284" width="14" height="14" fill="#f6e9e6" stroke="#b96559" stroke-width="1.4" rx="7"/><path d="M1458 288l6 6m0-6l-6 6" fill="none" stroke="#b96559" stroke-width="2" stroke-linecap="round"/><text x="1473" y="296" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Floor reflection</text></g><g class="roll-item" style="--delay:0.3s"><text x="1721" y="225" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Layout and form</text><text x="1952" y="225" font-size="16" font-weight="400" text-anchor="end" fill="#111" font-style="normal">1–5</text></g><g class="roll-item" style="--delay:0.8500000000000001s"><text x="1721" y="261" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Material realism</text><text x="1952" y="261" font-size="16" font-weight="400" text-anchor="end" fill="#111" font-style="normal">1–5</text></g><g class="roll-item" style="--delay:1.4000000000000001s"><text x="1721" y="297" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Light and mood</text><text x="1952" y="297" font-size="16" font-weight="400" text-anchor="end" fill="#111" font-style="normal">1–5</text></g><text x="1455" y="327" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">...</text><text x="1721" y="327" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">...</text><text x="1570" y="391" font-size="16" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Rubric Score: s<tspan baseline-shift="sub" font-size="11">vis,rub</tspan></text><text x="1838" y="391" font-size="16" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Aesthetic Score: s<tspan baseline-shift="sub" font-size="11">vis,aes</tspan></text></g><g class="roll-stage" data-roll-stage="12"><rect x="1077" y="444" width="384" height="233" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="1091" y="474" font-size="20" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Specification Judge</text><path d="M1089 483L1449 483" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><g class="roll-item" style="--delay:0.3s"><rect x="1093" y="505" width="14" height="14" fill="#e8f1ed" stroke="#608c79" stroke-width="1.4" rx="7"/><path d="M1096 512l3 3 5-6" fill="none" stroke="#608c79" stroke-width="2" stroke-linecap="round"/><text x="1112" y="517" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">4,567 3D meshes verified</text></g><g class="roll-item" style="--delay:0.7s"><rect x="1093" y="540" width="14" height="14" fill="#e8f1ed" stroke="#608c79" stroke-width="1.4" rx="7"/><path d="M1096 547l3 3 5-6" fill="none" stroke="#608c79" stroke-width="2" stroke-linecap="round"/><text x="1112" y="552" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">18.0 × 8.2 m BBox scale match</text></g><g class="roll-item" style="--delay:1.1s"><rect x="1093" y="575" width="14" height="14" fill="#e8f1ed" stroke="#608c79" stroke-width="1.4" rx="7"/><path d="M1096 582l3 3 5-6" fill="none" stroke="#608c79" stroke-width="2" stroke-linecap="round"/><text x="1112" y="587" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">12 pilasters, 6 chandeliers</text></g><text x="1113" y="615" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">...</text><path d="M1090 632L1450 632" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="1269" y="660" font-size="16" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Specification Score: s<tspan baseline-shift="sub" font-size="11">spec</tspan></text></g><g class="roll-stage" data-roll-stage="13"><rect x="1479" y="444" width="498" height="233" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="1493" y="474" font-size="20" font-weight="700" text-anchor="start" fill="#111" font-style="normal">Function Judge</text><path d="M1491 483L1965 483" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><svg x="1494" y="496" width="75" height="91" viewBox="1494 496 75 91" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg><text x="1531" y="610" font-size="15" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Init</text><path class="roll-arrow" d="M1571 541L1585 541" fill="none" stroke="#293746" stroke-width="1.6" marker-end="url(#roll-arrow-small)"/><g class="roll-item" style="--delay:0.7s"><svg x="1588" y="496" width="76" height="91" viewBox="1588 496 76 91" preserveAspectRatio="none"><image href="assets/rollout-verification.webp" width="2412" height="720"/></svg><text x="1626" y="610" font-size="15" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Triggered</text></g><g class="roll-item" style="--delay:1.0s"><rect x="1682" y="505" width="14" height="14" fill="#e8f1ed" stroke="#608c79" stroke-width="1.4" rx="7"/><path d="M1685 512l3 3 5-6" fill="none" stroke="#608c79" stroke-width="2" stroke-linecap="round"/><text x="1701" y="517" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">F1: Sunbeam toggle</text></g><g class="roll-item" style="--delay:1.4s"><rect x="1682" y="540" width="14" height="14" fill="#e8f1ed" stroke="#608c79" stroke-width="1.4" rx="7"/><path d="M1685 547l3 3 5-6" fill="none" stroke="#608c79" stroke-width="2" stroke-linecap="round"/><text x="1701" y="552" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">F2: Camera switch</text></g><g class="roll-item" style="--delay:1.8s"><rect x="1682" y="575" width="14" height="14" fill="#f6e9e6" stroke="#b96559" stroke-width="1.4" rx="7"/><path d="M1686 579l6 6m0-6l-6 6" fill="none" stroke="#b96559" stroke-width="2" stroke-linecap="round"/><text x="1701" y="587" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">F3: Door hinge clip</text></g><text x="1703" y="615" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">...</text><path d="M1491 632L1965 632" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="1730" y="660" font-size="16" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Function Score: s<tspan baseline-shift="sub" font-size="11">func</tspan></text></g><g class="roll-stage" data-roll-stage="14"><path class="roll-arrow" d="M2004 360L2033 360" fill="none" stroke="#293746" stroke-width="3" marker-end="url(#roll-arrow)"/><rect x="2040" y="24" width="371" height="672" fill="#f8fafa" stroke="#9ba9b7" stroke-width="1.6" rx="9"/><text x="2225.5" y="69" font-size="27" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">Filtering and Curation</text><path d="M2060 85L2391 85" fill="none" stroke="#34404d" stroke-width="1.4"/><rect x="2058" y="100" width="336" height="313" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="2226.0" y="130" font-size="20" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">Conjunctive Audit Gate</text><path d="M2070 139L2382 139" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="2076" y="175" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Visual score s<tspan baseline-shift="sub" font-size="11">vis</tspan></text><text x="2284" y="175" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">≥</text><text x="2310" y="175" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">γ<tspan baseline-shift="sub" font-size="11">vis</tspan></text><text x="2076" y="209" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Spec score s<tspan baseline-shift="sub" font-size="11">spec</tspan></text><text x="2284" y="209" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">≥</text><text x="2310" y="209" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">γ<tspan baseline-shift="sub" font-size="11">spec</tspan></text><text x="2076" y="243" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">Func score s<tspan baseline-shift="sub" font-size="11">func</tspan></text><text x="2284" y="243" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">≥</text><text x="2310" y="243" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">γ<tspan baseline-shift="sub" font-size="11">func</tspan></text><path d="M2070 263L2382 263" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><g class="roll-item" style="--delay:0.6s"><rect x="2084" y="296" width="14" height="14" fill="#f6e9e6" stroke="#b96559" stroke-width="1.4" rx="7"/><path d="M2088 300l6 6m0-6l-6 6" fill="none" stroke="#b96559" stroke-width="2" stroke-linecap="round"/><text x="2103" y="308" font-size="15" font-weight="400" text-anchor="start" fill="#111" font-style="normal"><tspan font-weight="700">Fail:</tspan> Re-Rollout (N<tspan baseline-shift="sub" font-size="11">max</tspan> = 6)</text></g><g class="roll-item" style="--delay:1.3s"><rect x="2084" y="362" width="14" height="14" fill="#e8f1ed" stroke="#608c79" stroke-width="1.4" rx="7"/><path d="M2087 369l3 3 5-6" fill="none" stroke="#608c79" stroke-width="2" stroke-linecap="round"/><text x="2103" y="374" font-size="15" font-weight="400" text-anchor="start" fill="#111" font-style="normal"><tspan font-weight="700">Pass:</tspan> Admit τ to dataset</text></g></g><g class="roll-stage" data-roll-stage="15"><path class="roll-arrow" d="M2226 415L2226 430" fill="none" stroke="#293746" stroke-width="1.6" marker-end="url(#roll-arrow-small)"/><rect x="2058" y="435" width="336" height="242" fill="white" stroke="#526070" stroke-width="2" rx="4"/><text x="2226.0" y="465" font-size="20" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">3DCodeFactory-Data</text><path d="M2070 474L2382 474" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><path d="M2226 490L2226 624" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><path d="M2071 561L2381 561" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><path d="M2071 634L2381 634" fill="none" stroke="#34404d" stroke-width="1.4" stroke-dasharray="7 4"/><text x="2142" y="518" font-size="21" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">5,045</text><text x="2306" y="518" font-size="21" font-weight="700" text-anchor="middle" fill="#111" font-style="normal">5.52B</text><text x="2142" y="543" font-size="15" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Trajectories</text><text x="2306" y="543" font-size="15" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Tokens (1.09M/τ)</text><svg x="2100" y="584" width="26" height="26"><use href="#roll-ic-blender" width="26" height="26"/></svg><text x="2138" y="603" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">57.9%</text><svg x="2262" y="583" width="26" height="26"><use href="#roll-ic-threejs" width="26" height="26"/></svg><text x="2300" y="603" font-size="16" font-weight="400" text-anchor="start" fill="#111" font-style="normal">42.1%</text><text x="2226" y="661" font-size="15" font-weight="400" text-anchor="middle" fill="#111" font-style="normal">Loss-masked multimodal SFT</text></g></svg><div class="roll-controls"><button type="button" data-roll-play aria-label="播放采集与验证动画">▷</button><button type="button" data-roll-replay aria-label="重播采集与验证动画">↻</button></div></div>
+</article>
+</div>
+</section>
+<section class="section task-packages" id="tasks">
+<div class="section-heading">
+<div class="heading-line">
+<span aria-hidden="true" class="section-number">06</span>
+<div>
+<p class="eyebrow">VERIFICATION RUBRICS</p>
+<h2>每一个任务，都自带可量化的验收标准</h2>
+</div>
+</div>
+<p class="section-intro">通用美学打分容易放过构件缺失或二维贴图伪装。我们针对每个任务的核心构件定制覆盖视觉、规格与功能的 0 / 0.5 / 1.0 三档判据。以下为两组代表性任务包的完整输入与验收细则。</p>
+</div>
+<div class="task-pair">
+<article>
+<div class="task-card-header">
+<div>
+<span class="eyebrow">Three.js 交互场景任务</span>
+<h3>巴洛克镜厅</h3>
+</div>
+<p>五开间筒形拱顶长廊、6 盏多层水晶吊灯与 12 根科林斯壁柱，支持日光星芒调节、多机位巡检与拱形镜门开合交互，共设 12 项（视觉 / 规格 / 功能）三档评分判据。</p>
+</div>
+<div class="task-card-body">
+<a href="assets/bmk/tasks/hall_1.webp" target="_blank">
+<img alt="镜厅任务的参考图、白模、渲染和功能状态" height="232" loading="lazy" src="assets/bmk/tasks/hall_1.webp" width="2220"/>
+</a>
+<div class="task-details">
+<div class="appendix-task"><div class="task-column-header"><h4>任务输入</h4></div>
+
+<div class="appendix-prompt" tabindex="0">
+<div class="task-input-section" id="case-panel-1"><div class="prompt-intro"><div class="prompt-title"><strong>
+           1.
+任务场景设定（
+           <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mi>
+              C
+             </mi>
+<annotation encoding="application/x-tex">
+              C
+             </annotation>
+</semantics>
+</math>
+           ）
+          </strong>
+          ：</div>面向博物馆修缮与古典建筑数字孪生审阅场景，以视觉参考图
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mi>
+             I
+            </mi>
+<annotation encoding="application/x-tex">
+             I
+            </annotation>
+</semantics>
+</math>
+          为锚点，使用
+          <span>
+           Three.js
+          </span>
+          构建可离线运行的巴洛克镜厅三维交互场景，交付自包含的
+          <span>
+           index.html
+          </span>
+          、模块化源码、本地 PBR 贴图资产、
+          <span>
+           README.md
+          </span>
+          以及主相机渲染的
+          <span>
+           final.png
+          </span>
+          （
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+              1536
+             </mn>
+<mo>
+              ×
+             </mo>
+<mn>
+              1024
+             </mn>
+</mrow>
+<annotation encoding="application/x-tex">
+             1536\times 1024
+            </annotation>
+</semantics>
+</math>
+          ）。
+         </div></div><div class="task-input-section" id="case-panel-2"><div class="prompt-intro"><div class="prompt-title"><strong>
+           2.
+建模规格要求（
+           <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mi>
+              S
+             </mi>
+<annotation encoding="application/x-tex">
+              S
+             </annotation>
+</semantics>
+</math>
+           ）
+          </strong>
+          ：</div>
+</div><div class="prompt-section"><div class="prompt-subtitle"><strong>
+           (i)
+空间尺度与开间布局
+          </strong>
+          ：</div>大厅总包围盒尺度按
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+              18.0
+             </mn>
+<mo>
+              ×
+             </mo>
+<mn>
+              8.2
+             </mn>
+<mo>
+              ×
+             </mo>
+<mn>
+              7.8
+             </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+              m
+             </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+             18.0\times 8.2\times 7.8\,\text{m}
+            </annotation>
+</semantics>
+</math>
+          单点透视纵深长廊构建，划分为 5
+个连续标准开间并覆以彩绘筒形拱顶，尽端设半圆拱门洞与端景采光窗、古典雕像；
+          </div><div class="prompt-section"><div class="prompt-subtitle"><strong>
+           (ii)
+核心构件与陈设
+          </strong>
+          ：</div>中轴拱顶垂挂 6
+盏多层分支水晶吊灯，两侧墙面对称排布 12
+根科林斯式粉紫大理石凹槽壁柱（配鎏金柱头与连续齿饰檐口）；左墙设高大拱形落地窗并悬挂垂地白纱帘，窗间与右墙对应嵌入拱顶大镜龛、鎏金雕花条案、青花瓷瓶及右侧大理石壁炉与烛台壁灯；
+          </div><div class="prompt-section"><div class="prompt-subtitle"><strong>
+           (iii)
+材质与三维实体化约束
+          </strong>
+          ：</div>区分高反射鎏金线脚（
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mtext mathvariant="normal">
+              metalness
+             </mtext>
+<mo>
+              =
+             </mo>
+<mn>
+              1.0
+             </mn>
+<mo>
+              ,
+             </mo>
+<mspace width="0.278em">
+</mspace>
+<mtext mathvariant="normal">
+              roughness
+             </mtext>
+<mo>
+              =
+             </mo>
+<mn>
+              0.18
+             </mn>
+</mrow>
+<annotation encoding="application/x-tex">
+             \text{metalness}=1.0,\; \text{roughness}=0.18
+            </annotation>
+</semantics>
+</math>
+          ）、抛光拼花大理石地面与彩绘拱顶画；吊灯水晶串、科林斯柱头、雕花条案及瓷瓶均须构建为独立真实三维网格，严禁使用二维贴图替代。
+         </div></div><div class="task-input-section" id="case-panel-3"><div class="prompt-intro"><div class="prompt-title"><strong>
+           3.
+动态交互功能（
+           <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mi>
+               F
+              </mi>
+<mo>
+               =
+              </mo>
+<mo form="prefix" stretchy="false">
+               {
+              </mo>
+<msub>
+<mi>
+                F
+               </mi>
+<mn>
+                1
+               </mn>
+</msub>
+<mo>
+               ,
+              </mo>
+<msub>
+<mi>
+                F
+               </mi>
+<mn>
+                2
+               </mn>
+</msub>
+<mo>
+               ,
+              </mo>
+<msub>
+<mi>
+                F
+               </mi>
+<mn>
+                3
+               </mn>
+</msub>
+<mo form="postfix" stretchy="false">
+               }
+              </mo>
+</mrow>
+<annotation encoding="application/x-tex">
+              F = \{F_1, F_2, F_3\}
+             </annotation>
+</semantics>
+</math>
+           ）
+          </strong>
+          ：</div>
+</div><div class="prompt-section"><div class="prompt-subtitle"><strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<msub>
+<mi>
+               F
+              </mi>
+<mn>
+               1
+              </mn>
+</msub>
+<annotation encoding="application/x-tex">
+              F_1
+             </annotation>
+</semantics>
+</math>
+           （日光仰角与星芒眩光调节）
+          </strong>
+          ：</div>提供太阳高度角与眩光滑块，拖动时左窗斜射日光角度、地面光斑延伸长度及窗口星芒强度实时联动变化；
+          </div><div class="prompt-section"><div class="prompt-subtitle"><strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<msub>
+<mi>
+               F
+              </mi>
+<mn>
+               2
+              </mn>
+</msub>
+<annotation encoding="application/x-tex">
+              F_2
+             </annotation>
+</semantics>
+</math>
+           （多机位巡检视角切换）
+          </strong>
+          ：</div>提供「主轴全景视图」「水晶吊灯仰视特写」「鎏金镜龛与条案特写」预设机位平滑切换及自由轨道浏览；
+          </div><div class="prompt-section"><div class="prompt-subtitle"><strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<msub>
+<mi>
+               F
+              </mi>
+<mn>
+               3
+              </mn>
+</msub>
+<annotation encoding="application/x-tex">
+              F_3
+             </annotation>
+</semantics>
+</math>
+           （拱形镜门开合交互）
+          </strong>
+          ：</div>支持点击触发壁面拱形镜门扇开合旋转并同步更新镜面反射。
+         </div></div></div>
+
+</div>
+<div class="complete-rubrics"><div class="task-column-header"><h4>任务专属评分准则 · 12 项</h4><div aria-label="评分准则分类" class="case-switch" role="tablist"><button aria-controls="case-panel-7" aria-selected="true" id="case-panel-7-tab" role="tab" tabindex="0" type="button">视觉</button><button aria-controls="case-panel-8" aria-selected="false" id="case-panel-8-tab" role="tab" tabindex="-1" type="button">规格</button><button aria-controls="case-panel-9" aria-selected="false" id="case-panel-9-tab" role="tab" tabindex="-1" type="button">功能</button></div></div>
+
+<div class="rubric-scroll">
+<div aria-labelledby="case-panel-7-tab" class="case-tab-panel" id="case-panel-7" role="tabpanel" tabindex="0"><section class="rubric-entry rubric-readable" data-rubric="V01"><h6>V01（五开间筒形拱顶长廊与单点透视构图）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>缺失长廊空间或退化为孤立墙片，透视方向与参考图严重不符；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>具备长廊大体轮廓，但开间节奏不足、筒形拱顶分格缺失或尽端拱门雕像收束关系偏离；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>完整还原五开间筒形拱顶长廊、左窗右镜对称序列及尽端拱门采光窗与雕像，单点透视构图与参考图高度对齐。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="V02"><h6>V02（中轴 6
+盏多层水晶吊灯与天顶画细节）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>吊灯缺失或简化为无分支的发光球/平面贴片；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>吊灯数量不足或仅有粗略金属外框，缺失多层弧形灯臂、垂挂水晶串或拱顶彩绘分格；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>沿中轴清晰排布 6
+盏鎏金弧形灯臂与多层垂挂水晶串吊灯，拱顶彩绘藻井分格与鎏金肋条层次分明。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="V03"><h6>V03（左墙拱形落地窗、垂地白纱帘与右墙鎏金镜龛壁柱）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>左右墙面立面构件缺失或未区分窗与镜龛；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>有窗洞与壁柱，但缺失垂地半透白纱帘、12
+根科林斯凹槽壁柱柱头或镜前雕花条案与青花瓷瓶；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>左墙拱形落地窗配垂地白纱帘，窗间与右墙嵌鎏金拱形镜龛、12
+根科林斯壁柱、雕花条案、青花瓷瓶及右侧壁炉，排布完整无穿模。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="V04"><h6>V04（鎏金线脚与抛光拼花大理石地面倒影质感）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>材质单一无反射，地面呈纯色塑料感；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>具备基础色调区分，但地面缺乏圆形几何拼花纹样或未能清晰映出左窗光带与吊灯高光；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>象牙白墙面、高光鎏金（
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mi>
+                M
+               </mi>
+<mo>
+                =
+               </mo>
+<mn>
+                1.0
+               </mn>
+<mo>
+                ,
+               </mo>
+<mi>
+                R
+               </mi>
+<mo>
+                =
+               </mo>
+<mn>
+                0.18
+               </mn>
+</mrow>
+<annotation encoding="application/x-tex">
+               M=1.0, R=0.18
+              </annotation>
+</semantics>
+</math>
+            ）与深红褐/灰紫圆形拼花大理石地面对比鲜明，地面与镜面呈现清晰连续的光带与暖光反射。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="V05"><h6>V05（左窗斜射强日光光带与星芒光影氛围）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>室内光照平淡均匀或严重过曝死黑，无窗光方向感；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>有侧向光照但地面缺失跨廊延伸的矩形窗格光带或窗口星芒高光；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>强日光自左窗斜射入室，在拼花地面形成清晰的窗格高光带与窗口星芒眩光，明暗冷暖层次接近参考图。</dd></div></dl></section></div><div aria-labelledby="case-panel-8-tab" class="case-tab-panel" hidden="" id="case-panel-8" role="tabpanel" tabindex="0"><section class="rubric-entry rubric-readable" data-rubric="S01"><h6>S01（三维网格实体化与独立构件数量）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>主体依赖二维贴图伪装或网格数
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mo>
+                &lt;
+               </mo>
+<mn>
+                500
+               </mn>
+</mrow>
+<annotation encoding="application/x-tex">
+               &lt;500
+              </annotation>
+</semantics>
+</math>
+            ；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>主体为三维网格但吊灯、壁柱或家具被合并为不可拆分的粗略块体；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>建筑、开窗、鎏金装饰、家具与灯具分层命名，各核心构件均以独立三维网格构建。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="S02"><h6>S02（长廊包围盒尺度与长宽比例）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>空间尺度严重失真或构件大面积悬空/穿地；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>长廊比例大体合理但主厅跨度偏离设定容差
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mo>
+                &gt;
+               </mo>
+<mn>
+                25
+               </mn>
+<mi>
+                %
+               </mi>
+</mrow>
+<annotation encoding="application/x-tex">
+               &gt;25\%
+              </annotation>
+</semantics>
+</math>
+            ；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>核心观察区符合
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+                18.0
+               </mn>
+<mo>
+                ×
+               </mo>
+<mn>
+                8.2
+               </mn>
+<mo>
+                ×
+               </mo>
+<mn>
+                7.8
+               </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+                m
+               </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+               18.0\times 8.2\times 7.8\,\text{m}
+              </annotation>
+</semantics>
+</math>
+            设计比例（宽深比与檐口/拱顶净高协调），所有条案、壁柱与垂帘底部贴合地面（误差
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mo>
+                &lt;
+               </mo>
+<mn>
+                0.02
+               </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+                m
+               </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+               &lt;0.02\,\text{m}
+              </annotation>
+</semantics>
+</math>
+            ）。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="S03"><h6>S03（核心重复构件数量与对称配置）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>吊灯与壁柱数量严重缺失；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>具备部分吊灯或壁柱但数量不匹配；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>场景图内明确包含 6 组水晶吊灯实例、12
+根科林斯壁柱及成对的鎏金镜龛与条案组件。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="S04"><h6>S04（相机参数与完全离线自包含交付）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>工程无法离线打开或依赖外部 CDN；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>可离线运行但主相机非
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+                24
+               </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+                mm
+               </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+               24\,\text{mm}
+              </annotation>
+</semantics>
+</math>
+            /
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+                1.65
+               </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+                m
+               </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+               1.65\,\text{m}
+              </annotation>
+</semantics>
+</math>
+            视高或缺少
+            <span>
+             final.png
+            </span>
+            ；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>全部 23
+张贴图与脚本完全本地自包含，主相机符合
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+                24
+               </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+                mm
+               </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+               24\,\text{mm}
+              </annotation>
+</semantics>
+</math>
+            焦距、
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+                1.65
+               </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+                m
+               </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+               1.65\,\text{m}
+              </annotation>
+</semantics>
+</math>
+            眼高与
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+                1536
+               </mn>
+<mo>
+                ×
+               </mo>
+<mn>
+                1024
+               </mn>
+</mrow>
+<annotation encoding="application/x-tex">
+               1536\times 1024
+              </annotation>
+</semantics>
+</math>
+            （
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+                3
+               </mn>
+<mo>
+                :
+               </mo>
+<mn>
+                2
+               </mn>
+</mrow>
+<annotation encoding="application/x-tex">
+               3{:}2
+              </annotation>
+</semantics>
+</math>
+            ）无报错交付。</dd></div></dl></section></div><div aria-labelledby="case-panel-9-tab" class="case-tab-panel" hidden="" id="case-panel-9" role="tabpanel" tabindex="0"><section class="rubric-entry rubric-readable" data-rubric="F01"><h6>F01（日光仰角与星芒眩光滑块联动）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>控件缺失或拖动后光照无变化；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>仅整体亮度变化而地面光带角度或星芒未联动；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>拖动滑块时太阳高度角、地面斜射光带与窗口星芒强度平滑联动，归位后精确恢复默认光影。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="F02"><h6>F02（主视点与局部特写机位切换）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>视角按钮无效；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>机位可切换但出现贴墙裁切或无法返回主视角；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>点击机位按钮可在主轴全景、吊灯特写与镜龛特写间平滑过渡且主体居中清晰，支持一键复位。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="F03"><h6>F03（拱形镜门扇开合控制）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>镜门无响应；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>镜门可移动但旋转轴错误导致穿模或未恢复闭合；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>触发开关后拱形镜门沿铰链轴平稳开合且无穿模，镜面反射同步更新并可完整复位。</dd></div></dl></section></div></div>
+</div>
+</div>
+</div>
+</article>
+<article>
+<div class="task-card-header">
+<div>
+<span class="eyebrow">Blender 静态建模任务</span>
+<h3>复古滚筒印刷机</h3>
+</div>
+<p>双拱形镂空铸铁机架、外露啮合齿轮组、双 T 型螺纹调压丝杆与 4 层阶梯油墨罐，包含 367 个独立三维网格构件，共设 10 项（视觉 / 规格）三档评分判据。</p>
+</div>
+<div class="task-card-body">
+<a href="assets/bmk/tasks/press_1.webp" target="_blank">
+<img alt="印刷机任务的参考图、白模与机械细节" height="232" loading="lazy" src="assets/bmk/tasks/press_1.webp" width="2220"/>
+</a>
+<div class="task-details">
+<div class="appendix-task"><div class="task-column-header"><h4>任务输入</h4></div>
+
+<div class="appendix-prompt" tabindex="0">
+<div class="task-input-section" id="case-panel-4"><div class="prompt-intro"><div class="prompt-title"><strong>
+           1.
+任务场景设定（
+           <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mi>
+              C
+             </mi>
+<annotation encoding="application/x-tex">
+              C
+             </annotation>
+</semantics>
+</math>
+           ）
+          </strong>
+          ：</div>面向工业遗产数字化与精密机械结构展示，基于视觉参考图
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mi>
+             I
+            </mi>
+<annotation encoding="application/x-tex">
+             I
+            </annotation>
+</semantics>
+</math>
+          在
+          <span>
+           Blender
+          </span>
+          中高保真复刻复古桌面滚筒校样印刷机及其配套油墨罐组合，置于浅灰无缝摄影棚背景中，交付可编辑的
+          <span>
+           scene.blend
+          </span>
+          、Python 建模脚本、本地贴图、
+          <span>
+           README.md
+          </span>
+          与 Cycles 渲染图
+          <span>
+           final.png
+          </span>
+          （
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+              1920
+             </mn>
+<mo>
+              ×
+             </mo>
+<mn>
+              1080
+             </mn>
+</mrow>
+<annotation encoding="application/x-tex">
+             1920\times 1080
+            </annotation>
+</semantics>
+</math>
+          ）。
+         </div></div><div class="task-input-section" id="case-panel-5"><div class="prompt-intro"><div class="prompt-title"><strong>
+           2.
+建模规格要求（
+           <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mi>
+              S
+             </mi>
+<annotation encoding="application/x-tex">
+              S
+             </annotation>
+</semantics>
+</math>
+           ）
+          </strong>
+          ：</div>
+</div><div class="prompt-section"><div class="prompt-subtitle"><strong>
+           (i)
+底座与整体布局
+          </strong>
+          ：</div>底部为厚实浅棕木质工作台板（尺寸约
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+              1.18
+             </mn>
+<mo>
+              ×
+             </mo>
+<mn>
+              0.60
+             </mn>
+<mo>
+              ×
+             </mo>
+<mn>
+              0.044
+             </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+              m
+             </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+             1.18\times 0.60\times 0.044\,\text{m}
+            </annotation>
+</semantics>
+</math>
+          ，带深色金属包边与油污磨损痕迹），铸铁印刷机占据台板左中部（约占板长
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+              66.5
+             </mn>
+<mi>
+              %
+             </mi>
+</mrow>
+<annotation encoding="application/x-tex">
+             66.5\%
+            </annotation>
+</semantics>
+</math>
+          ），右侧呈
+4 层阶梯状堆叠 10
+只带黑盖与红/蓝/黄/绿彩色标签的圆柱形油墨罐；
+          </div><div class="prompt-section"><div class="prompt-subtitle"><strong>
+           (ii)
+铸铁机架与滚筒传动机构
+          </strong>
+          ：</div>两侧为带圆孔与底部镂空的厚重黑色麻点铸铁拱形侧架（
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+              0.33
+             </mn>
+<mo>
+              ×
+             </mo>
+<mn>
+              0.028
+             </mn>
+<mo>
+              ×
+             </mo>
+<mn>
+              0.40
+             </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+              m
+             </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+             0.33\times 0.028\times 0.40\,\text{m}
+            </annotation>
+</semantics>
+</math>
+          ），中间支承主压印滚筒（直径
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+              0.103
+             </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+              m
+             </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+             0.103\,\text{m}
+            </annotation>
+</semantics>
+</math>
+          ）与平整压印床台板；前侧护板以六角螺栓固定并嵌有黄铜「POCO」铭牌，右侧外露啮合小齿轮组、短传动轴、黄铜轴套与摇柄，左侧伸出黑色长操作杆，前下梁设弧形提手并贴有浅白手写纸签；顶梁带圆形减轻孔，上方垂直穿过主副两套螺纹调压丝杆与横置
+T 型手柄；
+          </div><div class="prompt-section"><div class="prompt-subtitle"><strong>
+           (iii)
+印刷册与三维实体化约束
+          </strong>
+          ：</div>压印床与油墨罐之间平铺一册四角微翘的彩色印张手册；所有齿轮轮齿、螺纹丝杆、螺栓螺母、铭牌与
+10 只油墨罐均须构建为独立三维网格（严禁用贴图伪装立体机械零件）。
+         </div></div><div class="task-input-section" id="case-panel-6"><div class="prompt-intro"><div class="prompt-title"><strong>
+           3.
+检查相机与光影配置（
+           <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mi>
+              F
+             </mi>
+<annotation encoding="application/x-tex">
+              F
+             </annotation>
+</semantics>
+</math>
+           ）
+          </strong>
+          ：</div>静态精密建模任务主模式
+          <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mi>
+              F
+             </mi>
+<mo>
+              =
+             </mo>
+<mi>
+              ⌀
+             </mi>
+</mrow>
+<annotation encoding="application/x-tex">
+             F = \varnothing
+            </annotation>
+</semantics>
+</math>
+          ，工程内置默认主视角相机
+          <span>
+           CAM_Hero_Overview
+          </span>
+          、滚筒调压丝杆微距检查相机
+          <span>
+           CAM_Detail_RollerAdjuster
+          </span>
+          以及可切换显隐的掠射金属质感检测光
+          <span>
+           LGT_Raking_Metal
+          </span>
+          。
+         </div></div></div>
+
+</div>
+<div class="complete-rubrics"><div class="task-column-header"><h4>任务专属评分准则 · 10 项</h4><div aria-label="评分准则分类" class="case-switch" role="tablist"><button aria-controls="case-panel-10" aria-selected="true" id="case-panel-10-tab" role="tab" tabindex="0" type="button">视觉</button><button aria-controls="case-panel-11" aria-selected="false" id="case-panel-11-tab" role="tab" tabindex="-1" type="button">规格</button><button aria-controls="case-panel-12" aria-selected="false" id="case-panel-12-tab" role="tab" tabindex="-1" type="button">功能</button></div></div>
+
+<div class="rubric-scroll">
+<div aria-labelledby="case-panel-10-tab" class="case-tab-panel" id="case-panel-10" role="tabpanel" tabindex="0"><section class="rubric-entry rubric-readable" data-rubric="V01"><h6>V01（木质工作台板左中机身与右侧阶梯油墨罐整体布局）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>缺失机身或油墨罐群，或布局左右颠倒；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>主体存在但机架与油墨罐比例失调，或台板缺失金属包边；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>铸铁印刷机稳固安装于浅棕木板左中部，右侧 10 只油墨罐分 4
+层阶梯错落堆叠，四分之三俯视构图与参考图一致。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="V02"><h6>V02（双拱形镂空铸铁侧架、前护板螺栓与黄铜铭牌）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>侧架退化为实心方块且无前护板细节；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>有拱形侧架但缺失圆孔/底部镂空、六角螺栓阵列或黄铜铭牌；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>两侧拱形铸铁架圆孔与底部开口准确，前护板螺栓、端头圆螺母及黄铜「POCO」铭牌清晰可辨。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="V03"><h6>V03（外露啮合齿轮组、黄铜轴套与三处操纵杆件）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>缺失侧面齿轮传动链或操纵手柄；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>仅有粗略圆柱占位而无真实轮齿啮合，或漏建左侧长杆/前下弧形提手；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>滚筒轴端齿轮、侧传动齿轮、黄铜轴套、右侧摇柄、左侧长直手柄与前下弧形提手装配连接完整准确。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="V04"><h6>V04（带减轻孔顶梁与主副双 T
+型螺纹调压丝杆）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>顶部调压机构缺失；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>仅有一根光杆或缺少后方副 T
+型手柄与顶梁减轻孔；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>顶梁减轻孔、垂直外露螺纹丝杆、圆形垫圈及主副两套带深色握柄的 T
+型手柄完整还原。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="V05"><h6>V05（压印床彩色印张手册、前梁手写纸签与 10
+只分色油墨罐）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>缺失印张手册或油墨罐无标签区分；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>有印张或油墨罐但缺失纸页微翘厚度、前梁白纸签或彩色环绕标签；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>压印床平铺带微翘书页的彩色手册，前下梁贴有浅白手写签，右侧
+10 只黑盖油墨罐具备红/蓝/黄/绿清晰印刷标签。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="V06"><h6>V06（麻点铸铁、拉丝钢、黄铜与旧木板 PBR
+材质区分度）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>材质均一无金属/木材区分；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>有基础颜色但铸铁表面过于光滑如塑料，缺乏麻点凹凸与油膜高光；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>深黑麻点铸铁、高光拉丝钢滚筒/丝杆、黄铜铭牌/轴套、纤维木板与高光油墨罐标签质感层次极其丰富。</dd></div></dl></section></div><div aria-labelledby="case-panel-11-tab" class="case-tab-panel" hidden="" id="case-panel-11" role="tabpanel" tabindex="0"><section class="rubric-entry rubric-readable" data-rubric="S01"><h6>S01（部件级独立三维网格建模，严禁贴图伪装几何）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>齿轮、螺栓或油墨罐被合并为单一网格或贴图；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>主体分离但螺栓、轮齿或油墨罐盖未独立成件；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>机架、滚筒、齿轮、丝杆、螺栓、手册与 10 只油墨罐均构建为独立三维网格。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="S02"><h6>S02（木板、机身与 4
+层油墨罐空间包围盒约束）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>部件严重穿模或悬浮；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>机身贴合台面但油墨罐堆叠层数不符；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>台板尺寸
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+                1.18
+               </mn>
+<mo>
+                ×
+               </mo>
+<mn>
+                0.60
+               </mn>
+<mo>
+                ×
+               </mo>
+<mn>
+                0.044
+               </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+                m
+               </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+               1.18\times 0.60\times 0.044\,\text{m}
+              </annotation>
+</semantics>
+</math>
+            ，机脚严格落于台板顶面
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mi>
+                z
+               </mi>
+<mo>
+                =
+               </mo>
+<mn>
+                0.045
+               </mn>
+<mspace width="0.167em">
+</mspace>
+<mtext mathvariant="normal">
+                m
+               </mtext>
+</mrow>
+<annotation encoding="application/x-tex">
+               z=0.045\,\text{m}
+              </annotation>
+</semantics>
+</math>
+            ，10
+只油墨罐按
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow>
+<mn>
+                4
+               </mn>
+<mi>
+                /
+               </mi>
+<mn>
+                3
+               </mn>
+<mi>
+                /
+               </mi>
+<mn>
+                2
+               </mn>
+<mi>
+                /
+               </mi>
+<mn>
+                1
+               </mn>
+</mrow>
+<annotation encoding="application/x-tex">
+               4/3/2/1
+              </annotation>
+</semantics>
+</math>
+            呈四层
+            <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mi>
+               z
+              </mi>
+<annotation encoding="application/x-tex">
+               z
+              </annotation>
+</semantics>
+</math>
+            高度阶梯稳固堆叠。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="S03"><h6>S03（预设微距检查相机与掠射检测光源配置）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd>缺少预设相机或灯光对象；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>相机存在但取景偏离调压机构；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd>工程内含
+            <span>
+             CAM_Hero_Overview
+            </span>
+            、
+            <span>
+             CAM_Detail_RollerAdjuster
+            </span>
+            及可切换的
+            <span>
+             LGT_Raking_Metal
+            </span>
+            掠射光源，切换渲染后清晰呈现铸铁麻点高光。</dd></div></dl></section><section class="rubric-entry rubric-readable" data-rubric="S04"><h6>S04（原生 Blender
+工程可复现性与离线自包含交付）</h6><dl class="rubric-levels"><div class="rubric-level"><dt><strong class="rubric-score" data-score="0">0 分</strong></dt><dd><span>
+             scene.blend
+            </span>
+            损坏或渲染结果与提交预览不符；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="0.5">0.5 分</strong></dt><dd>工程可打开但缺少建模脚本或部分贴图路径丢失；</dd></div>
+<div class="rubric-level"><dt><strong class="rubric-score" data-score="1.0">1.0 分</strong></dt><dd><span>
+             scene.blend
+            </span>
+            离线完整打开，重新执行 Cycles
+渲染与提交的
+            <span>
+             final.png
+            </span>
+            像素级一致。</dd></div></dl></section></div><div aria-labelledby="case-panel-12-tab" class="case-tab-panel" hidden="" id="case-panel-12" role="tabpanel" tabindex="0"><p class="rubric-static-note">
+          静态建模任务，功能要求 F = ∅，无独立功能准则。
+         </p></div></div>
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<section class="section dataset" id="dataset">
+<div class="section-heading">
+<div class="heading-line">
+<span aria-hidden="true" class="section-number">07</span>
+<div>
+<p class="eyebrow">OPEN DATASET</p>
+<h2>涵盖多轮试错与自检闭环的三维代码轨迹集</h2>
+</div>
+</div>
+<p class="section-intro">不同于仅保留最终脚本的静态代码库，3DCodeFactory 完整记录了智能体从初版建模、沙箱报错恢复、多视角渲染自检到精修交付的多轮演进过程。</p>
+</div>
+<div class="dataset-atlas">
+<div class="data-facts">
+<article>
+<strong>
+       2,920
+      </strong>
+<span>
+       Blender 建模轨迹
+      </span>
+<small>
+       原生 .blend 工程、Python 脚本与多视角渲染
+      </small>
+</article>
+<article>
+<strong>
+       2,125
+      </strong>
+<span>
+       Three.js 交互轨迹
+      </span>
+<small>
+       自包含 WebGL 场景、着色器与动态交互控件
+      </small>
+</article>
+<article>
+<strong>
+       4,270
+      </strong>
+<span>
+       单场景代码行数中位数
+      </span>
+<small>
+       单条多轮轨迹平均包含 109 万词元
+      </small>
+</article>
+<article>
+<strong>
+       87.7%
+      </strong>
+<span>
+       跨领域复合场景占比
+      </span>
+<small>
+       单场景融合多类几何构件、PBR 材质与布光
+      </small>
+</article>
+</div>
+<figure class="dataset-taxonomy">
+<a><img alt="三维内容分类体系：10 大领域与细粒度类别" height="1500" loading="lazy" src="assets/data-system.webp" width="4200"/></a>
+</figure>
+<div class="dataset-charts">
+<figure><figcaption>领域分布与双引擎构成</figcaption><img alt="数据集内容与平台构成" loading="lazy" src="assets/dataset-composition-theme.svg?v=30"/></figure>
+<figure><figcaption>单条轨迹词元长度分布</figcaption><div class="dataset-chart-crop" style="aspect-ratio:747/557"><img alt="轨迹长度分布" loading="lazy" src="assets/dataset-analysis.webp" style="width:321.28514056%;left:-105.48862115%;top:-10.77199282%"/></div></figure>
+<figure><figcaption>沙箱工具调用与动作分布</figcaption><img alt="智能体操作分布" loading="lazy" src="assets/dataset-actions-theme.svg"/></figure>
+</div>
+</div>
+</section>
+<section class="section results" id="results">
+<div class="section-heading">
+<div class="heading-line">
+<span aria-hidden="true" class="section-number">08</span>
+<div>
+<p class="eyebrow">DOWNSTREAM BENCHMARKS</p>
+<h2>微调前后，一眼看出差距</h2>
+</div>
+</div>
+<p class="section-intro">涵盖复杂场景构建、局部几何编辑、网页三维交互与单物体建模四类下游基准。微调后 Qwen3.5-9B 综合得分跃升 +27.81 分，Qwen3.8-27B 全面超越同系旗舰 Qwen3.8-Max。</p>
+</div>
+<div class="benchmark-comparison">
+<div class="bmk-Clean-head">
+<h3>四类下游任务实测效果对比</h3>
+<div aria-label="切换基准对比图" class="filters" role="group">
+<button aria-pressed="true" class="active" data-comparison="bw" type="button">BlenderWorld（场景构建）</button>
+<button aria-pressed="false" data-comparison="bg" type="button">BlenderGym（场景编辑）</button>
+<button aria-pressed="false" data-comparison="p3d" type="button">P3D-Bench（Three.js）</button>
+<button aria-pressed="false" data-comparison="3dc" type="button">3DCodeBench（物体建模）</button>
+</div>
+</div>
+<figure class="comparison-figure">
+<a id="comparison-link">
+<img alt="BlenderWorld 场景构建定性对比" height="2066" id="comparison-image" loading="lazy" src="assets/bmk/bw/bw_0059_sft_full.png" width="2400"/>
+</a>
+</figure>
+</div>
+<div class="quant-unified-card">
+<div class="quant-card-head">
+<div>
+<h3>下游基准测试表现</h3>
+<p>前沿模型与 Qwen3.5-9B / Qwen3.8-27B 监督微调及消融对比 · 3 项基准</p>
+</div>
+<div aria-label="结果表显示方式" class="results-view-switch" role="group"><button aria-pressed="true" data-results-view="summary" type="button">综合得分</button><button aria-pressed="false" data-results-view="detail" type="button">全部指标</button></div>
+</div>
+<div class="result-highlights">
+<article>
+<span>
+       Qwen3.5-9B（三项基准平均得分）
+      </span>
+<h3>
+       +27.81
+       <small>
+        分
+       </small>
+</h3>
+<div class="gain-row">
+<span>
+        基座
+       </span>
+<div>
+<i class="gain-0" style="width:28.5%">
+</i>
+</div>
+<b>
+        28.50
+       </b>
+</div>
+<div class="gain-row">
+<span>
+        未筛选数据
+       </span>
+<div>
+<i class="gain-1" style="width:49.2%">
+</i>
+</div>
+<b>
+        49.20
+       </b>
+</div>
+<div class="gain-row">
+<span>
+        完整筛选
+       </span>
+<div>
+<i class="gain-2" style="width:56.31%">
+</i>
+</div>
+<b>
+        56.31
+       </b>
+</div>
+</article>
+<article>
+<span>
+       Qwen3.8-27B（三项基准平均得分）
+      </span>
+<h3>
+       +8.12
+       <small>
+        分
+       </small>
+</h3>
+<div class="gain-row">
+<span>
+        基座
+       </span>
+<div>
+<i class="gain-0" style="width:58.66%">
+</i>
+</div>
+<b>
+        58.66
+       </b>
+</div>
+<div class="gain-row">
+<span>
+        未筛选数据
+       </span>
+<div>
+<i class="gain-1" style="width:63.66%">
+</i>
+</div>
+<b>
+        63.66
+       </b>
+</div>
+<div class="gain-row">
+<span>
+        完整筛选
+       </span>
+<div>
+<i class="gain-2" style="width:66.78%">
+</i>
+</div>
+<b>
+        66.78
+       </b>
+</div>
+</article>
+</div>
+<div class="paper-results" data-view="summary" id="paper-results">
+
+<div aria-label="论文完整主结果" class="table-wrap paper-results-scroll" role="region" tabindex="0">
+<table class="paper-results-table"><caption class="results-sr-only">前沿模型与 3DCodeFactory 微调结果</caption>
+<thead class="summary-head"><tr><th scope="col">模型与训练设置</th><th scope="col">BlenderWorld</th><th scope="col">P3D-Bench</th><th scope="col">3DCodeBench</th><th scope="col">三项平均</th></tr></thead>
+<thead class="detail-head"><tr><th rowspan="2" scope="col">模型与训练设置</th><th colspan="3" scope="colgroup">BlenderWorld</th><th colspan="3" scope="colgroup">P3D-Bench · Three.js</th><th colspan="3" scope="colgroup">3DCodeBench</th><th rowspan="2" scope="col">三项平均</th></tr><tr>
+<th scope="col">Text</th><th scope="col">MM</th><th scope="col">Score</th><th scope="col">Geo</th><th scope="col">Judge</th><th scope="col">Score</th><th scope="col">CD ↓</th><th scope="col">Uni3D</th><th scope="col">Score</th></tr></thead>
+<tbody data-model-group="frontier">
+<tr class="paper-result-row result-frontier" data-result-kind="frontier"><th scope="row"><span class="result-model"><img alt="" class="result-model-icon" height="22" src="assets/model-icons/openai.svg" width="22"/><span>GPT-6 Astra</span></span></th>
+<td class="metric-detail"><span class="result-value">78.60</span></td>
+<td class="metric-detail"><span class="result-value">80.70</span></td>
+<td class="metric-score"><span class="result-value">79.97</span></td>
+<td class="metric-detail"><span class="result-value">63.43</span></td>
+<td class="metric-detail"><span class="result-value">62.10</span></td>
+<td class="metric-score"><span class="result-value">62.77</span></td>
+<td class="metric-detail"><span class="result-value">6.79</span></td>
+<td class="metric-detail"><span class="result-value">59.76</span></td>
+<td class="metric-score"><span class="result-value">76.49</span></td>
+<td class="metric-score metric-overall"><span class="result-value">73.08</span></td>
+</tr>
+<tr class="paper-result-row result-frontier" data-result-kind="frontier"><th scope="row"><span class="result-model"><img alt="" class="result-model-icon" height="22" src="assets/model-icons/claude.svg" width="22"/><span>Claude Opus 5</span></span></th>
+<td class="metric-detail"><span class="result-value">74.80</span></td>
+<td class="metric-detail"><span class="result-value">72.10</span></td>
+<td class="metric-score"><span class="result-value">73.04</span></td>
+<td class="metric-detail"><span class="result-value">69.09</span></td>
+<td class="metric-detail"><span class="result-value">57.52</span></td>
+<td class="metric-score"><span class="result-value">63.31</span></td>
+<td class="metric-detail"><span class="result-value">6.37</span></td>
+<td class="metric-detail"><span class="result-value">54.60</span></td>
+<td class="metric-score"><span class="result-value">74.12</span></td>
+<td class="metric-score metric-overall"><span class="result-value">70.16</span></td>
+</tr>
+<tr class="paper-result-row result-frontier" data-result-kind="frontier"><th scope="row"><span class="result-model"><img alt="" class="result-model-icon" height="22" src="assets/model-icons/deepseek.svg" width="22"/><span>DeepSeek-V4.1 Flash</span></span></th>
+<td class="metric-detail"><span class="result-value">79.10</span></td>
+<td class="metric-detail"><span class="result-value">74.46</span></td>
+<td class="metric-score"><span class="result-value">76.08</span></td>
+<td class="metric-detail"><span class="result-value">64.10</span></td>
+<td class="metric-detail"><span class="result-value">56.86</span></td>
+<td class="metric-score"><span class="result-value">60.48</span></td>
+<td class="metric-detail"><span class="result-value">6.08</span></td>
+<td class="metric-detail"><span class="result-value">53.68</span></td>
+<td class="metric-score"><span class="result-value">73.80</span></td>
+<td class="metric-score metric-overall"><span class="result-value">70.12</span></td>
+</tr>
+<tr class="paper-result-row result-frontier" data-result-kind="frontier"><th scope="row"><span class="result-model"><img alt="" class="result-model-icon" height="22" src="assets/model-icons/qwen.svg" width="22"/><span>Qwen3.8-Max</span></span></th>
+<td class="metric-detail"><span class="result-value">59.60</span></td>
+<td class="metric-detail"><span class="result-value">61.10</span></td>
+<td class="metric-score"><span class="result-value">60.58</span></td>
+<td class="metric-detail"><span class="result-value">61.06</span></td>
+<td class="metric-detail"><span class="result-value">50.51</span></td>
+<td class="metric-score"><span class="result-value">55.79</span></td>
+<td class="metric-detail"><span class="result-value">6.71</span></td>
+<td class="metric-detail"><span class="result-value">50.49</span></td>
+<td class="metric-score"><span class="result-value">71.89</span></td>
+<td class="metric-score metric-overall"><span class="result-value">62.75</span></td>
+</tr>
+</tbody>
+<tbody data-model-group="9b">
+<tr class="paper-result-row result-base" data-result-kind="base"><th scope="row"><span class="result-model"><img alt="" class="result-model-icon" height="22" src="assets/model-icons/qwen.svg" width="22"/><span>Qwen3.5-9B<small>原始基座</small></span></span></th>
+<td class="metric-detail"><span class="result-value">6.94</span></td>
+<td class="metric-detail"><span class="result-value">7.28</span></td>
+<td class="metric-score"><span class="result-value">7.16</span></td>
+<td class="metric-detail"><span class="result-value">38.88</span></td>
+<td class="metric-detail"><span class="result-value">24.97</span></td>
+<td class="metric-score"><span class="result-value">31.93</span></td>
+<td class="metric-detail"><span class="result-value">25.95</span></td>
+<td class="metric-detail"><span class="result-value">18.74</span></td>
+<td class="metric-score"><span class="result-value">46.40</span></td>
+<td class="metric-score metric-overall"><span class="result-value">28.50</span></td>
+</tr>
+<tr class="paper-result-row result-unfiltered" data-result-kind="unfiltered"><th scope="row"><span class="result-model"><span><span class="result-train-prefix">+ </span>3DCodeFactory<small>未筛选轨迹</small></span></span></th>
+<td class="metric-detail"><span class="result-value">55.40</span></td>
+<td class="metric-detail"><span class="result-value">43.78</span></td>
+<td class="metric-score"><span class="result-value">47.84</span></td>
+<td class="metric-detail"><span class="result-value">43.35</span></td>
+<td class="metric-detail"><span class="result-value">31.49</span></td>
+<td class="metric-score"><span class="result-value">37.42</span></td>
+<td class="metric-detail"><span class="result-value">11.45</span></td>
+<td class="metric-detail"><span class="result-value">36.15</span></td>
+<td class="metric-score"><span class="result-value">62.35</span></td>
+<td class="metric-score metric-overall"><span class="result-value">49.20</span></td>
+</tr>
+<tr class="paper-result-row result-ours" data-result-kind="ours"><th scope="row"><span class="result-model"><span><span class="result-train-prefix">+ </span>3DCodeFactory<small>完整筛选</small></span></span></th>
+<td class="metric-detail"><span class="result-value metric-best">66.04</span></td>
+<td class="metric-detail"><span class="result-value metric-best">53.54</span></td>
+<td class="metric-score"><span class="result-value metric-best">57.91</span><span class="result-gain">+50.75</span></td>
+<td class="metric-detail"><span class="result-value metric-best">48.00</span></td>
+<td class="metric-detail"><span class="result-value metric-best">38.44</span></td>
+<td class="metric-score"><span class="result-value metric-best">43.22</span><span class="result-gain">+11.29</span></td>
+<td class="metric-detail"><span class="result-value metric-best">6.91</span></td>
+<td class="metric-detail"><span class="result-value metric-best">42.50</span></td>
+<td class="metric-score"><span class="result-value metric-best">67.80</span><span class="result-gain">+21.40</span></td>
+<td class="metric-score metric-overall"><span class="result-value metric-best">56.31</span><span class="result-gain">+27.81</span></td>
+</tr>
+</tbody>
+<tbody data-model-group="27b">
+<tr class="paper-result-row result-base" data-result-kind="base"><th scope="row"><span class="result-model"><img alt="" class="result-model-icon" height="22" src="assets/model-icons/qwen.svg" width="22"/><span>Qwen3.8-27B<small>原始基座</small></span></span></th>
+<td class="metric-detail"><span class="result-value">53.78</span></td>
+<td class="metric-detail"><span class="result-value">52.61</span></td>
+<td class="metric-score"><span class="result-value">53.02</span></td>
+<td class="metric-detail"><span class="result-value">53.77</span></td>
+<td class="metric-detail"><span class="result-value">49.49</span></td>
+<td class="metric-score"><span class="result-value">51.63</span></td>
+<td class="metric-detail"><span class="result-value">7.31</span></td>
+<td class="metric-detail"><span class="result-value">49.95</span></td>
+<td class="metric-score"><span class="result-value">71.32</span></td>
+<td class="metric-score metric-overall"><span class="result-value">58.66</span></td>
+</tr>
+<tr class="paper-result-row result-unfiltered" data-result-kind="unfiltered"><th scope="row"><span class="result-model"><span><span class="result-train-prefix">+ </span>3DCodeFactory<small>未筛选轨迹</small></span></span></th>
+<td class="metric-detail"><span class="result-value">64.70</span></td>
+<td class="metric-detail"><span class="result-value">63.41</span></td>
+<td class="metric-score"><span class="result-value">63.86</span></td>
+<td class="metric-detail"><span class="result-value">57.68</span></td>
+<td class="metric-detail"><span class="result-value">52.94</span></td>
+<td class="metric-score"><span class="result-value">55.31</span></td>
+<td class="metric-detail"><span class="result-value">6.83</span></td>
+<td class="metric-detail"><span class="result-value">50.44</span></td>
+<td class="metric-score"><span class="result-value">71.81</span></td>
+<td class="metric-score metric-overall"><span class="result-value">63.66</span></td>
+</tr>
+<tr class="paper-result-row result-ours" data-result-kind="ours"><th scope="row"><span class="result-model"><span><span class="result-train-prefix">+ </span>3DCodeFactory<small>完整筛选</small></span></span></th>
+<td class="metric-detail"><span class="result-value metric-best">71.91</span></td>
+<td class="metric-detail"><span class="result-value metric-best">69.18</span></td>
+<td class="metric-score"><span class="result-value metric-best">70.13</span><span class="result-gain">+17.11</span></td>
+<td class="metric-detail"><span class="result-value metric-best">59.79</span></td>
+<td class="metric-detail"><span class="result-value metric-best">55.33</span></td>
+<td class="metric-score"><span class="result-value metric-best">57.56</span><span class="result-gain">+5.93</span></td>
+<td class="metric-detail"><span class="result-value">6.66</span></td>
+<td class="metric-detail"><span class="result-value metric-best">51.96</span></td>
+<td class="metric-score"><span class="result-value metric-best">72.65</span><span class="result-gain">+1.33</span></td>
+<td class="metric-score metric-overall"><span class="result-value metric-best">66.78</span><span class="result-gain">+8.12</span></td>
+</tr>
+</tbody>
+</table></div><p class="caption table-caption">注：三项平均为各基准综合得分（Score）的算术均值；P3D-Bench 评测 Three.js 子集；3DCodeBench 中 CD 与 Uni3D 均按百分制缩放（×100），综合得分定义为 Score = ((100 − CD) + Uni3D) / 2。绿色数值为相对各自原始基座的提升幅度；“未筛选轨迹”使用同等规模未经过滤的轨迹训练。</p></div>
+</div>
+</section>
+<section class="section citation-section" id="citation">
+<div class="section-heading">
+<div class="heading-line">
+<span aria-hidden="true" class="section-number">09</span>
+<div>
+<p class="eyebrow">CITATION</p>
+<h2>论文引用</h2>
+</div>
+</div>
+</div>
+<div class="citation-card">
+<div class="citation-bar">
+<span>BibTeX</span>
+<button type="button" class="copy-bibtex-btn" onclick="navigator.clipboard.writeText(document.getElementById('bibtex-code').innerText).then(()=>{this.textContent='已复制';setTimeout(()=>this.textContent='复制引用',1600)})">复制引用</button>
+</div>
+<pre class="bibtex-code" id="bibtex-code" data-no-i18n=""><code>@article{wang20263dcodefactory,
+  title   = {3DCodeFactory: Scaling Training Data for 3D Code Agents},
+  author  = {Wang, Zhaoyu and Wen, Xueru and Li, Xingyu and Lou, Jie},
+  year    = {2026}
+}</code></pre>
+</div>
+</section>
+</main>
+<footer>
+<a class="brand" href="#">
+<img alt="" class="brand-icon" height="820" src="assets/brand-mint.svg" width="720"/>
+    3DCodeFactory
+   </a>
+<p>
+    让 Code Agent 学会构建复杂三维世界
+   </p>
+<a href="#">
+    返回顶部 ↑
+   </a>
+</footer>
+<dialog aria-labelledby="viewer-title" class="scene-detail" id="viewer">
+<div class="viewer-layout">
+<div class="viewer-main">
+<div id="viewer-stage">
+<img alt="" id="viewer-image"/>
+</div>
+<div class="viewer-toolbar">
+<div aria-label="场景展示模式" class="view-tabs" role="group">
+<button data-view="model" id="model-tab" type="button">
+        三维模型
+       </button>
+<button data-view="video" id="video-tab">
+        场景视频
+       </button>
+<button class="active" data-view="render">
+        渲染图
+       </button>
+<button data-view="reference">
+        参考图
+       </button>
+<button data-view="clay" hidden="">
+        白模图
+       </button>
+<button data-view="live" id="live-tab">
+        实时交互 ↗
+       </button>
+</div>
+<button class="viewer-fullscreen" data-viewer-fullscreen="viewer" type="button">
+       ⛶ 全屏
+      </button>
+</div>
+</div>
+<aside class="viewer-sidebar">
+<div class="viewer-bar">
+<div>
+<span class="eyebrow" id="viewer-type">
+</span>
+<h2 id="viewer-title">
+</h2>
+</div>
+<button aria-label="关闭场景查看器" id="close-viewer">
+       ✕
+      </button>
+</div>
+<div class="viewer-description">
+<h3>场景概览</h3>
+<p class="scene-summary" id="task-summary">
+</p>
+<details class="prompt-drawer">
+<summary>
+        查看原始任务指令（Prompt）
+       </summary>
+<p class="original-prompt" id="task-original">
+</p>
+</details>
+</div>
+<div class="viewer-footer">
+<span id="view-note">
+       场景渲染图
+      </span>
+<a id="source-link" rel="noopener" target="_blank">
+       独立打开交互场景 ↗
+      </a>
+</div>
+<div class="viewer-actions">
+<button data-copy-prompt="viewer" type="button">
+       复制提示词
+      </button>
+<button data-copy-case="viewer" type="button">
+       复制案例链接
+      </button>
+<a download="" hidden="" id="viewer-download">
+       下载展示视频 ↓
+      </a>
+</div>
+</aside>
+</div>
+</dialog>
+<dialog aria-labelledby="dataset-case-title" class="scene-detail" id="dataset-viewer">
+<div class="viewer-layout">
+<div class="viewer-main">
+<div class="dataset-view-stage">
+<a id="dataset-full-image" rel="noopener" target="_blank">
+<img alt="" id="dataset-case-image"/>
+</a>
+</div>
+<div class="viewer-toolbar">
+<div aria-label="切换案例视图" class="view-tabs" id="dataset-view-tabs" role="group">
+</div>
+<button class="viewer-fullscreen" data-viewer-fullscreen="dataset-viewer" type="button">
+       ⛶ 全屏
+      </button>
+</div>
+</div>
+<aside class="viewer-sidebar">
+<div class="viewer-bar">
+<div>
+<span class="eyebrow" id="dataset-case-type">
+</span>
+<h2 id="dataset-case-title">
+</h2>
+</div>
+<button aria-label="关闭数据集案例" id="close-dataset-viewer">
+       ✕
+      </button>
+</div>
+<div class="dataset-case-notes">
+<h3>场景概览</h3>
+<p class="scene-summary" id="dataset-case-summary">
+</p>
+<details class="prompt-drawer">
+<summary>
+        查看原始任务指令（Prompt）
+       </summary>
+<p class="original-prompt" id="dataset-case-description">
+</p>
+</details>
+</div>
+<div class="viewer-actions">
+<button data-copy-prompt="dataset-viewer" type="button">
+       复制提示词
+      </button>
+<button data-copy-case="dataset-viewer" type="button">
+       复制案例链接
+      </button>
+<a download="" hidden="" id="dataset-viewer-download">
+       下载展示视频 ↓
+      </a>
+<a hidden="" id="dataset-live-link" rel="noopener" target="_blank">
+       独立打开场景 ↗
+      </a>
+</div>
+</aside>
+</div>
+</dialog>
+<script src="data.js?v=30">
+</script>
+<script src="dataset-cases.js?v=30">
+</script>
+<script src="media-performance.js?v=20261117-resume">
+</script>
+<script src="app.js?v=30">
+</script>
+<script src="layout.js?v=31">
+</script>
+<script src="editorial.js?v=30">
+</script>
+<script src="clean-viewer.js?v=30"></script>
+<script src="code-workbench.js?v=30"></script>
+<script src="bmk-native.js?v=30"></script>
+<script src="media-lightbox.js?v=20261117-first-frame"></script>
+<script src="case-tabs.js?v=30"></script>
+<script src="task-synthesis.js?v=30"></script>
+<script src="rollout-animation.js?v=30"></script>
+<script src="showcase-k2.js?v=30"></script>
+<script src="locales/en.js?v=gen04-steps2"></script>
+<script src="i18n.js?v=20261120"></script>
+</body>
+</html>

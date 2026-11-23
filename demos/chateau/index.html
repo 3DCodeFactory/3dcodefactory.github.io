@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="A cinematic, interactive study of a French château in a wooded valley." />
+  <title>Château de la Vallée — An Interactive Study in Stone & Light</title>
+  <style>
+    :root {
+      --ivory: #f1ede1;
+      --ivory-dim: rgba(241, 237, 225, 0.66);
+      --ivory-faint: rgba(241, 237, 225, 0.38);
+      --line: rgba(241, 237, 225, 0.22);
+      --ink: #111512;
+      --serif: "Liberation Serif", "Baskerville", "Times New Roman", Georgia, serif;
+      --sans: "Liberation Sans", "Helvetica Neue", Arial, sans-serif;
+      --mono: "Liberation Mono", "SFMono-Regular", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #161b18;
+      color: var(--ivory);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #app { position: fixed; inset: 0; }
+
+    #scene {
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      cursor: grab;
+      touch-action: none;
+    }
+    #scene:active { cursor: grabbing; }
+
+    
+    #hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity .7s cubic-bezier(.22,.61,.36,1);
+    }
+
+    .title-block {
+      position: absolute;
+      top: clamp(26px, 4.4vw, 62px);
+      left: clamp(26px, 4.6vw, 72px);
+      max-width: min(520px, 46vw);
+      filter: drop-shadow(0 2px 18px rgba(8, 12, 9, 0.5));
+    }
+
+    .kicker {
+      font-family: var(--sans);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.33em;
+      text-transform: uppercase;
+      color: rgba(245, 241, 230, 0.65);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .kicker::before {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: rgba(245, 241, 230, 0.5);
+      display: inline-block;
+    }
+
+    .title-block h1 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(38px, 4.7vw, 68px);
+      line-height: 0.93;
+      letter-spacing: -0.025em;
+      margin: 0;
+      color: #f4f0e5;
+      text-shadow: 0 1px 38px rgba(7, 11, 8, 0.35);
+    }
+    .title-block h1 em {
+      font-style: italic;
+      font-weight: 400;
+      color: rgba(245, 239, 224, 0.78);
+    }
+    .title-rule {
+      width: 64px;
+      height: 1px;
+      margin: 20px 0 13px;
+      background: rgba(243, 237, 221, 0.38);
+    }
+    .title-sub {
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 0.17em;
+      line-height: 1.6;
+      text-transform: uppercase;
+      color: rgba(244, 239, 227, 0.58);
+      max-width: 350px;
+    }
+
+    .corner-mark {
+      position: absolute;
+      top: clamp(28px, 4.4vw, 60px);
+      right: clamp(26px, 4.6vw, 70px);
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 8.5px;
+      line-height: 1.9;
+      letter-spacing: 0.17em;
+      color: rgba(241, 236, 224, 0.45);
+      text-transform: uppercase;
+    }
+    .corner-mark strong {
+      display: block;
+      font-family: var(--sans);
+      font-weight: 400;
+      font-size: 8px;
+      letter-spacing: 0.28em;
+      color: rgba(243, 238, 226, 0.68);
+      margin-bottom: 5px;
+    }
+
+    .caption {
+      position: absolute;
+      left: clamp(26px, 4.6vw, 72px);
+      bottom: clamp(26px, 4.2vw, 54px);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--sans);
+      font-size: 8.5px;
+      letter-spacing: 0.21em;
+      text-transform: uppercase;
+      color: rgba(245, 241, 230, 0.43);
+      text-shadow: 0 1px 12px rgba(5, 8, 6, .4);
+    }
+    .caption .dot {
+      width: 3px; height: 3px; border-radius: 50%;
+      background: rgba(245, 241, 230, 0.5);
+    }
+
+    
+    .panel {
+      position: absolute;
+      right: clamp(22px, 3.4vw, 54px);
+      bottom: clamp(22px, 3.4vw, 50px);
+      width: 348px;
+      padding: 22px 23px 19px;
+      pointer-events: auto;
+      color: var(--ivory);
+      background:
+        linear-gradient(145deg, rgba(26, 31, 27, 0.62), rgba(16, 20, 17, 0.72));
+      border: 1px solid rgba(241, 236, 222, 0.16);
+      box-shadow:
+        0 24px 64px rgba(3, 7, 5, 0.38),
+        inset 0 1px 0 rgba(255, 252, 242, 0.08);
+      backdrop-filter: blur(17px) saturate(0.9);
+      -webkit-backdrop-filter: blur(17px) saturate(0.9);
+      border-radius: 2px;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: -1px; left: 23px;
+      width: 42px; height: 1px;
+      background: rgba(245, 235, 211, 0.7);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 20px;
+    }
+    .panel-head .cap {
+      font-family: var(--sans);
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: rgba(244, 239, 226, 0.58);
+    }
+    #clock {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: rgba(246, 240, 225, 0.82);
+    }
+
+    .preset-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 21px;
+    }
+    .preset {
+      appearance: none;
+      border: 1px solid rgba(241, 236, 224, 0.13);
+      background: rgba(255, 255, 255, 0.012);
+      color: rgba(243, 238, 226, 0.56);
+      font-family: var(--sans);
+      font-size: 8px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 7px 11px 6px;
+      border-radius: 1px;
+      cursor: pointer;
+      transition: background .28s, color .28s, border-color .28s;
+    }
+    .preset:hover {
+      color: rgba(250, 245, 232, 0.92);
+      border-color: rgba(241, 236, 224, 0.3);
+    }
+    .preset.active {
+      background: rgba(243, 235, 215, 0.14);
+      color: #f5efe1;
+      border-color: rgba(245, 237, 218, 0.36);
+    }
+
+    .control { margin-bottom: 19px; }
+    .control:last-of-type { margin-bottom: 14px; }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+    .control-label .name {
+      font-family: var(--sans);
+      font-size: 8.2px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(242, 237, 225, 0.65);
+      white-space: nowrap;
+    }
+    .control-label .value {
+      font-family: var(--serif);
+      font-size: 13.5px;
+      font-style: italic;
+      letter-spacing: 0.01em;
+      color: rgba(248, 241, 226, 0.9);
+      text-align: right;
+    }
+
+    .range-wrap { position: relative; }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      display: block;
+      width: 100%;
+      height: 16px;
+      margin: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 2px;
+      border-radius: 0;
+      background: rgba(243, 237, 222, 0.18);
+    }
+    input[type="range"]::-moz-range-track {
+      height: 2px;
+      background: rgba(243, 237, 222, 0.18);
+    }
+    #mood::-webkit-slider-runnable-track {
+      background: linear-gradient(90deg, rgba(164,187,195,.78), rgba(233,203,158,.92));
+    }
+    #mood::-moz-range-track {
+      background: linear-gradient(90deg, rgba(164,187,195,.78), rgba(233,203,158,.92));
+    }
+    #mist::-webkit-slider-runnable-track {
+      background: linear-gradient(90deg, rgba(228,230,222,.28), rgba(238,233,220,.78));
+    }
+    #mist::-moz-range-track {
+      background: linear-gradient(90deg, rgba(228,230,222,.28), rgba(238,233,220,.78));
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 11px;
+      height: 11px;
+      margin-top: -4.5px;
+      border-radius: 50%;
+      background: #f1ebdc;
+      border: 1px solid rgba(255,255,255,.7);
+      box-shadow: 0 0 0 3.5px rgba(241,235,220,0.09), 0 1px 6px rgba(4,8,6,.55);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    input[type="range"]:hover::-webkit-slider-thumb {
+      transform: scale(1.12);
+      box-shadow: 0 0 0 5px rgba(241,235,220,0.12), 0 1px 8px rgba(4,8,6,.6);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #f1ebdc; border: 1px solid rgba(255,255,255,.7);
+    }
+
+    .range-ends {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1px;
+      font-family: var(--mono);
+      font-size: 6.8px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(239, 234, 222, 0.28);
+    }
+
+    .panel-divider {
+      height: 1px;
+      background: rgba(241, 236, 222, 0.11);
+      margin: 18px 0 14px;
+    }
+
+    .panel-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .hint {
+      font-family: var(--sans);
+      font-size: 7.6px;
+      line-height: 1.65;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(241, 236, 224, 0.3);
+      max-width: 130px;
+    }
+    .panel-actions { display: flex; gap: 7px; }
+    .ghost {
+      appearance: none;
+      border: 1px solid rgba(241, 236, 224, 0.15);
+      background: transparent;
+      color: rgba(243, 238, 226, 0.62);
+      font-family: var(--sans);
+      font-size: 7.6px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 8px 9px;
+      cursor: pointer;
+      transition: color .25s, background .25s, border-color .25s;
+      white-space: nowrap;
+      border-radius: 1px;
+    }
+    .ghost:hover {
+      color: #f5efe2;
+      border-color: rgba(241, 236, 224, 0.32);
+      background: rgba(255,255,255,0.025);
+    }
+    .ghost.primary {
+      background: rgba(242, 234, 215, 0.13);
+      border-color: rgba(242, 234, 215, 0.35);
+      color: rgba(249, 243, 230, 0.92);
+    }
+    .ghost.primary:hover { background: rgba(242, 234, 215, 0.2); }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 30px;
+      transform: translate(-50%, 10px);
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(246, 241, 229, 0.88);
+      background: rgba(18, 23, 19, 0.74);
+      border: 1px solid rgba(241, 236, 225, 0.18);
+      padding: 10px 16px;
+      border-radius: 1px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .35s, transform .35s;
+      backdrop-filter: blur(12px);
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    
+    #loading {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at 52% 42%, rgba(67, 78, 61, 0.55), transparent 64%),
+        #141a16;
+      z-index: 20;
+      transition: opacity 1.15s ease, visibility 1.15s;
+    }
+    #loading.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-inner { text-align: center; transform: translateY(-2vh); }
+    .loader-monogram {
+      font-family: var(--serif);
+      font-size: 58px;
+      font-style: italic;
+      color: rgba(242, 236, 222, 0.88);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .loader-line {
+      width: 54px; height: 1px; margin: 20px auto 18px;
+      background: rgba(242, 236, 222, 0.24);
+      position: relative; overflow: hidden;
+    }
+    .loader-line::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: rgba(246, 239, 224, 0.9);
+      transform: translateX(-100%);
+      animation: loadSweep 2.4s cubic-bezier(.55,.1,.35,.9) infinite;
+    }
+    @keyframes loadSweep {
+      0% { transform: translateX(-100%); }
+      55%, 100% { transform: translateX(100%); }
+    }
+    .loader-label {
+      font-family: var(--sans);
+      font-size: 8px;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: rgba(240, 234, 220, 0.44);
+    }
+
+    
+    body.capture #hud, body.capture .toast { opacity: 0 !important; }
+    body.capture #scene { cursor: none; }
+    body.capture #loading { opacity: 0; visibility: hidden; }
+
+    @media (max-width: 760px) {
+      .title-block { max-width: 74vw; }
+      .title-block h1 { font-size: clamp(32px, 9vw, 48px); }
+      .title-sub { display: none; }
+      .corner-mark { display: none; }
+      .caption { display: none; }
+      .panel {
+        left: 16px; right: 16px; bottom: 16px;
+        width: auto;
+        padding: 17px 18px 15px;
+      }
+      .panel-head { margin-bottom: 14px; }
+      .preset-row { margin-bottom: 16px; }
+      .control { margin-bottom: 14px; }
+      .hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene" aria-label="Interactive 3D view of a French château in a misty wooded valley"></canvas>
+
+    <div id="hud">
+      <header class="title-block">
+        <div class="kicker">Val de Loire · France</div>
+        <h1>Château de la<br><em>Vallée</em></h1>
+        <div class="title-rule"></div>
+        <div class="title-sub">A study in limestone, slate and changing light<br>in the wooded heart of the valley</div>
+      </header>
+
+      <div class="corner-mark">
+        <strong>Étude No. 01</strong>
+        47° 23′ N &nbsp;·&nbsp; 0° 41′ E<br>
+        <span id="weather-mark">Sur ciel couvert</span>
+      </div>
+
+      <div class="caption">
+        <span>Château de la Vallée</span>
+        <span class="dot"></span>
+        <span>Early autumn</span>
+        <span class="dot"></span>
+        <span>交互场景</span>
+      </div>
+
+      <aside class="panel" aria-label="光照与氛围 controls">
+        <div class="panel-head">
+          <span class="cap">光照与氛围</span>
+          <span id="clock">07:12</span>
+        </div>
+
+        <div class="preset-row" role="group" aria-label="Lighting presets">
+          <button class="preset active" id="preset-morning" type="button">阴天清晨</button>
+          <button class="preset" id="preset-evening" type="button">暖色傍晚</button>
+        </div>
+
+        <div class="control">
+          <div class="control-label">
+            <span class="name">一天中的时刻</span>
+            <span class="value" id="mood-name">阴天清晨</span>
+          </div>
+          <div class="range-wrap">
+            <input id="mood" type="range" min="0" max="100" value="9" step="0.1"
+              aria-label="Time of day, overcast morning to late afternoon" />
+          </div>
+          <div class="range-ends"><span>06:30</span><span>18:10</span></div>
+        </div>
+
+        <div class="control">
+          <div class="control-label">
+            <span class="name">山谷雾量</span>
+            <span class="value" id="mist-name">轻薄雾气</span>
+          </div>
+          <div class="range-wrap">
+            <input id="mist" type="range" min="0" max="100" value="38" step="0.1"
+              aria-label="Mist density over the wooded hills" />
+          </div>
+          <div class="range-ends"><span>清晰</span><span>浓雾</span></div>
+        </div>
+
+        <div class="panel-divider"></div>
+        <div class="panel-foot">
+          <div class="hint">拖拽旋转<br>滚轮缩放</div>
+          <div class="panel-actions">
+            <button class="ghost" id="reset-view" type="button">重置视角</button>
+            <button class="ghost primary" id="save-still" type="button">保存截图</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="toast" id="toast">图片已保存</div>
+    </div>
+
+    <div id="loading">
+      <div class="loader-inner">
+        <div class="loader-monogram">V</div>
+        <div class="loader-line"></div>
+        <div class="loader-label">正在加载城堡场景</div>
+      </div>
+    </div>
+  </div>
+
+  <noscript>
+    <div style="position:fixed;inset:0;display:grid;place-items:center;background:#141a16;color:#f1ede1;font-family:serif;padding:40px;text-align:center;">
+      此场景需要浏览器支持 JavaScript 和 WebGL。
+    </div>
+  </noscript>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three.module.js",
+        "three/addons/": "./vendor/addons/"
+      }
+    }
+  </script>
+  <script type="module" src="./main.js"></script>
+<script src="../camera-limits.js"></script><script src="../scene-ui.js?v=20261114"></script></body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#070b0d" />
+  <meta name="description" content="Riverdale Pumping Station No. 1 — an editable, interactive Three.js reconstruction of a damp Gothic industrial atrium." />
+  <title>Riverdale Pumping Station No. 1</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three.module.js",
+        "three/addons/": "./vendor/addons/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <div id="scene" aria-label="Interactive 3D view of the Riverdale pumping station atrium" role="img"></div>
+  </div>
+
+  <div id="loader" role="status" aria-live="polite">
+    <div class="loader-rule"></div>
+    <div class="loader-kicker">CITY OF RIVERDALE · WATER SUPPLY</div>
+    <h2>Pumping Station <em>No. 1</em></h2>
+    <div class="loader-bar"><i></i></div>
+    <p>LIGHTING THE NAVE · FILLING THE CISTERN</p>
+    <div class="loader-rule short"></div>
+  </div>
+
+  <div id="hud">
+    <header class="masthead">
+      <div class="mast-rule"></div>
+      <div class="mast-copy">
+        <div class="eyebrow">Riverdale Municipal Waterworks</div>
+        <h1>Pumping Station <span>No. 1</span></h1>
+        <div class="meta"><span>North Atrium · 04</span><i></i><span>Erected 1897</span><i></i><span>Re-built 1926</span></div>
+      </div>
+    </header>
+
+    <div class="top-actions">
+      <button id="btn-sound" class="action-btn" type="button" aria-pressed="false" title="Toggle ambient sound">
+        <span class="sound-icon" aria-hidden="true"><i></i></span>
+        <span class="btn-label">Sound off</span>
+      </button>
+      <button id="btn-reset" class="action-btn" type="button" title="Return to the original view (R)">
+        <span class="reset-icon" aria-hidden="true">↺</span>
+        <span class="btn-label">Reset view</span>
+      </button>
+    </div>
+
+    <div class="side-caption left">
+      <span>SUPPLY MAINS</span>
+      <i></i>
+      <span>PLATE 03</span>
+    </div>
+
+    <div class="inspection-hint" id="hint">
+      <span class="hint-line"></span>
+      <p><b>Drag</b> to inspect&nbsp;&nbsp;·&nbsp;&nbsp;<b>Scroll</b> to approach</p>
+      <p class="quiet">Click or drag the water to disturb it &nbsp;·&nbsp; turn the copper wheel to wake the pump</p>
+    </div>
+
+    <aside class="valve-panel" id="valve-panel" aria-label="Main valve status">
+      <div class="valve-title">
+        <span>MAIN VALVE</span>
+        <span id="valve-state">CLOSED</span>
+      </div>
+      <div class="valve-meter"><i id="valve-fill"></i><b></b><b></b><b></b><b></b><b></b></div>
+      <div class="valve-readout">
+        <span id="valve-percent">00</span><span class="pct">%</span>
+        <span class="readout-label">OPEN</span>
+        <span class="pressure" id="pressure">0.0 <em>psi</em></span>
+      </div>
+      <button id="btn-valve" class="text-btn" type="button">Turn valve <span>V</span></button>
+    </aside>
+
+    <div class="frame-corner tl"></div>
+    <div class="frame-corner br"></div>
+  </div>
+
+  <div id="tooltip" role="status">Turn the copper wheel</div>
+
+  <div id="no-webgl">
+    <div>
+      <p class="eyebrow">RIVERDALE WATERWORKS · 1897</p>
+      <h2>This chamber needs WebGL.</h2>
+      <p>Please open it in a browser with hardware acceleration enabled.</p>
+    </div>
+  </div>
+
+  <noscript>
+    <div class="noscript">The pumping station is rendered in real time and requires JavaScript.</div>
+  </noscript>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

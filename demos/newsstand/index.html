@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#071012" />
+  <title>The Evening Stand — 雨后街角</title>
+  <meta name="description" content="A rainy evening street-corner newsstand and an old Pepsi-Cola machine, built in real-time Three.js." />
+  <link rel="stylesheet" href="./src/style.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three.module.js",
+      "three/addons/": "./vendor/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <main id="stage" aria-label="可交互的三维街角报刊亭场景"></main>
+
+  <div id="vignette" aria-hidden="true"></div>
+  <div id="colorwash" aria-hidden="true"></div>
+  <div id="grain" aria-hidden="true"></div>
+
+  <div id="ui">
+    <header class="title-card">
+      <div class="kicker">
+        <span class="kicker-line"></span>
+        <span>RAIN STUDY&nbsp;&nbsp;/&nbsp;&nbsp;NO. 04</span>
+      </div>
+      <h1>After the Rain</h1>
+      <p class="title-zh">雨后傍晚 · 街角报刊亭</p>
+    </header>
+
+    <div class="view-label" aria-hidden="true">
+      <span class="view-index">01</span>
+      <span class="view-rule"></span>
+      <span>STREET LEVEL · 19:42</span>
+    </div>
+
+    <button id="resetView" class="reset-view" type="button" aria-label="回到默认街面视角">
+      <span class="reset-icon">↺</span><span>重置视角</span>
+    </button>
+
+    <div class="footer-mark" aria-hidden="true">
+      <span class="footer-rule"></span>
+      <div>
+        <strong>THE CORNER STAND</strong>
+        <span>NEWS · TOBACCO · COLD DRINKS</span>
+      </div>
+    </div>
+
+    <section class="ops-panel" aria-label="交互操作">
+      <div class="ops-head">
+        <div class="ops-title">
+          <span class="led" id="statusLed"></span>
+          <span>THE OLD VENDING MACHINE</span>
+        </div>
+        <span class="machine-state" id="machineState">READY</span>
+      </div>
+      <div class="ops-actions">
+        <button id="coinBtn" class="ops-btn" type="button" data-action="coin" aria-label="投入一枚五美分硬币">
+          <span class="btn-glyph">5<i>¢</i></span>
+          <span class="btn-copy"><span class="btn-label">投币</span><span class="btn-sub">投入硬币</span></span>
+          <span class="btn-key">C</span>
+        </button>
+        <button id="selectBtn" class="ops-btn" type="button" data-action="select" aria-label="按一号键选择纸杯" disabled>
+          <span class="btn-glyph">1</span>
+          <span class="btn-copy"><span class="btn-label">选一杯</span><span class="btn-sub">选择饮料</span></span>
+          <span class="btn-key">1</span>
+        </button>
+        <button id="waterBtn" class="ops-btn" type="button" data-action="water" aria-label="走近前景水洼">
+          <span class="btn-glyph wave-glyph">≈</span>
+          <span class="btn-copy"><span class="btn-label">看水洼</span><span class="btn-sub">切换水洼视角</span></span>
+          <span class="btn-key">W</span>
+        </button>
+      </div>
+      <p class="ops-hint" id="opsHint">轻触机器与投币口，或从下面投下一枚硬币。再按一次，让一只纸杯落下。</p>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="tooltip" class="tooltip" role="tooltip"></div>
+  </div>
+
+  <div id="loader" class="loader">
+    <div class="loader-inner">
+      <span class="loader-kicker">AFTER THE RAIN · 19:42</span>
+      <div class="loader-title">The Evening Stand</div>
+      <div class="loader-rule"><span></span></div>
+      <span class="loader-note">正在加载报刊亭</span>
+    </div>
+  </div>
+
+  <noscript>
+    <div class="error-card">此场景需要 JavaScript 和 WebGL。</div>
+  </noscript>
+
+  <script type="module" src="./src/main.js"></script>
+<script src="../camera-limits.js"></script><script src="../scene-ui.js?v=20261114"></script></body>
+</html>

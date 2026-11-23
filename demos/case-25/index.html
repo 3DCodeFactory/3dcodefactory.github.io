@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#080d12" />
+  <title>Agence de Voyages — Pleine Lune</title>
+  <meta name="description" content="Une vitrine de voyage en trois dimensions, à l'heure bleue. L'affiche de la pleine lune, le présentoir de brochures et le globe sont interactifs." />
+  <link rel="stylesheet" href="./fonts/fonts.css" />
+  <style>
+    :root {
+      --ink: #e4d7bb;
+      --ink-dim: rgba(228, 215, 187, 0.62);
+      --ink-faint: rgba(228, 215, 187, 0.34);
+      --navy: #0b1924;
+      --amber: #c99155;
+      --hairline: rgba(213, 194, 154, 0.24);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #070b0f;
+      color: var(--ink);
+      font-family: "Cormorant Garamond", Georgia, serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+      overscroll-behavior: none;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      touch-action: none;
+    }
+
+    
+    .lens {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      background:
+        radial-gradient(ellipse 82% 76% at 48% 46%, transparent 52%, rgba(2, 5, 8, 0.26) 81%, rgba(2, 4, 6, 0.58) 100%),
+        linear-gradient(180deg, rgba(4, 9, 13, 0.14) 0%, transparent 18%, transparent 76%, rgba(2, 6, 9, 0.22) 100%);
+      mix-blend-mode: multiply;
+    }
+
+    .grain {
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0.065;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.72'/%3E%3C/svg%3E");
+      background-size: 240px 240px;
+      animation: grain-shift 0.7s steps(2) infinite;
+      mix-blend-mode: soft-light;
+    }
+
+    @keyframes grain-shift {
+      0% { transform: translate3d(-1.2%, 0.8%, 0); }
+      25% { transform: translate3d(0.6%, -1.3%, 0); }
+      50% { transform: translate3d(1.4%, 0.4%, 0); }
+      75% { transform: translate3d(-0.5%, 1.1%, 0); }
+      100% { transform: translate3d(-1.2%, 0.8%, 0); }
+    }
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at 50% 45%, #11202b 0%, #080f15 52%, #05080b 100%);
+      transition: opacity 1.4s cubic-bezier(.22,.61,.36,1), visibility 1.4s;
+    }
+
+    .loader.is-ready {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader__inner {
+      text-align: center;
+      transform: translateY(-1.5vh);
+    }
+
+    .loader__eyebrow {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(10px, 0.85vw, 13px);
+      font-weight: 500;
+      letter-spacing: 0.54em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .loader h1 {
+      margin: 0;
+      font-family: "Italiana", "Cormorant Garamond", serif;
+      font-weight: 400;
+      font-size: clamp(30px, 4.4vw, 68px);
+      letter-spacing: 0.16em;
+      color: #e8dcc1;
+      text-shadow: 0 0 45px rgba(217, 176, 116, 0.14);
+    }
+
+    .loader__moon {
+      width: 46px;
+      height: 46px;
+      margin: 30px auto 22px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 38% 34%, rgba(255, 247, 220, 0.98) 0 12%, rgba(239, 221, 178, 0.94) 38%, rgba(201, 178, 126, 0.38) 64%, rgba(201, 178, 126, 0) 72%);
+      box-shadow: 0 0 34px rgba(241, 217, 164, 0.14), 0 0 90px rgba(241, 217, 164, 0.08);
+      animation: moon-breathe 3.8s ease-in-out infinite;
+    }
+
+    @keyframes moon-breathe {
+      0%, 100% { opacity: 0.72; transform: scale(0.96); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    .loader__status {
+      min-height: 1.2em;
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      font-size: clamp(13px, 1.05vw, 17px);
+      letter-spacing: 0.06em;
+      color: var(--ink-dim);
+    }
+
+    .hud {
+      position: fixed;
+      z-index: 7;
+      pointer-events: none;
+      transition: opacity 1.1s ease, transform 1.1s ease;
+    }
+
+    .masthead {
+      left: clamp(22px, 2.6vw, 48px);
+      bottom: clamp(24px, 2.6vw, 46px);
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      opacity: 0.82;
+    }
+
+    .masthead__rule {
+      width: 1px;
+      height: 54px;
+      background: linear-gradient(180deg, transparent, var(--hairline) 24%, var(--hairline) 72%, transparent);
+    }
+
+    .masthead__eyebrow {
+      font-size: clamp(8px, 0.64vw, 10px);
+      letter-spacing: 0.46em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 5px;
+    }
+
+    .masthead__title {
+      font-family: "Italiana", "Cormorant Garamond", serif;
+      font-size: clamp(17px, 1.4vw, 23px);
+      line-height: 1.1;
+      letter-spacing: 0.13em;
+      color: rgba(235, 224, 200, 0.92);
+    }
+
+    .masthead__sub {
+      margin-top: 5px;
+      font-size: clamp(11px, 0.8vw, 13px);
+      font-style: italic;
+      letter-spacing: 0.04em;
+      color: var(--ink-faint);
+    }
+
+    .hint {
+      left: 50%;
+      bottom: clamp(26px, 2.8vw, 46px);
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      white-space: nowrap;
+      opacity: 0;
+      animation: hint-in 1.6s 2.4s ease forwards;
+      text-transform: uppercase;
+      font-size: clamp(8px, 0.66vw, 10px);
+      font-weight: 500;
+      letter-spacing: 0.34em;
+      color: rgba(224, 212, 185, 0.48);
+    }
+
+    .hint::before, .hint::after {
+      content: "";
+      width: clamp(22px, 3.2vw, 58px);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(213,194,154,0.3));
+    }
+
+    .hint::after { transform: scaleX(-1); }
+
+    .hint.is-first-used {
+      animation: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    @keyframes hint-in {
+      from { opacity: 0; transform: translate(-50%, 7px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    .selection {
+      right: clamp(22px, 2.6vw, 46px);
+      bottom: clamp(24px, 2.6vw, 44px);
+      max-width: min(360px, 40vw);
+      text-align: right;
+      opacity: 0;
+      transform: translateY(9px);
+      transition: opacity 0.55s ease, transform 0.55s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .selection.is-open { opacity: 1; transform: translateY(0); }
+
+    .selection__kicker {
+      font-size: 9px;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: rgba(207, 174, 119, 0.75);
+      margin-bottom: 7px;
+    }
+
+    .selection__title {
+      font-family: "Italiana", "Cormorant Garamond", serif;
+      font-size: clamp(22px, 1.8vw, 30px);
+      letter-spacing: 0.06em;
+      color: rgba(237, 225, 201, 0.95);
+      line-height: 1.1;
+    }
+
+    .selection__line {
+      margin-top: 8px;
+      font-size: clamp(11px, 0.84vw, 14px);
+      font-style: italic;
+      line-height: 1.4;
+      color: var(--ink-faint);
+    }
+
+    .selection__close {
+      margin-top: 11px;
+      font-size: 8px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(221, 206, 176, 0.38);
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 9;
+      pointer-events: none;
+      left: 0;
+      top: 0;
+      padding: 9px 14px 8px;
+      background: rgba(8, 17, 23, 0.82);
+      border: 1px solid rgba(207, 192, 159, 0.24);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.32);
+      backdrop-filter: blur(7px);
+      opacity: 0;
+      transform: translate3d(-999px, -999px, 0);
+      transition: opacity 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tooltip.is-visible { opacity: 1; }
+
+    .tooltip__title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 14px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #e3d5b8;
+    }
+
+    .tooltip__sub {
+      margin-top: 2px;
+      font-size: 11px;
+      font-style: italic;
+      color: rgba(221, 207, 178, 0.6);
+    }
+
+    .reset-view {
+      position: fixed;
+      z-index: 8;
+      right: clamp(20px, 2.4vw, 42px);
+      top: clamp(20px, 2.2vw, 38px);
+      pointer-events: auto;
+      appearance: none;
+      background: transparent;
+      border: 1px solid var(--hairline);
+      color: var(--ink-dim);
+      padding: 9px 13px;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 10px;
+      letter-spacing: 0.23em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity .35s ease, color .35s ease, border-color .35s ease;
+      opacity: 0;
+    }
+
+    .reset-view:hover { color: var(--ink); border-color: rgba(213,194,154,0.5); }
+    .reset-view.is-visible { opacity: 0.68; }
+
+    .error-card {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      place-items: center;
+      background: #060a0d;
+      padding: 40px;
+    }
+
+    .error-card.is-visible { display: grid; }
+
+    .error-card__inner {
+      max-width: 620px;
+      border-top: 1px solid rgba(190,160,110,0.35);
+      padding-top: 24px;
+      font-size: 17px;
+      line-height: 1.55;
+      color: #cdbfa4;
+    }
+
+    body.is-capture .hud,
+    body.is-capture .tooltip,
+    body.is-capture .reset-view,
+    body.is-capture .grain,
+    body.is-capture .lens {
+      display: none !important;
+    }
+
+    @media (max-width: 760px) {
+      .hint { display: none; }
+      .masthead__rule { display: none; }
+      .masthead { opacity: 0.65; }
+      .selection { max-width: 70vw; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .grain { animation: none; }
+      .loader__moon { animation: none; }
+      .hint { animation-duration: .01s; animation-delay: 0s; }
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three.module.js",
+        "three/addons/": "./vendor/addons/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <main id="stage" aria-label="Une vitrine d'agence de voyages ancienne, éclairée au crépuscule. Affiche lunaire, présentoir de brochures et globe interactifs.">
+    <canvas id="scene-canvas" role="img" aria-label="Vitrine 3D : une grande affiche de la pleine lune au centre, des affiches plus petites à gauche, un présentoir de brochures et un globe à droite. Des pierres pâles, une plaque, une plante et une borne en fer encadrent la rue."></canvas>
+  </main>
+
+  <div class="lens" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div class="loader" id="loader">
+    <div class="loader__inner">
+      <div class="loader__eyebrow"> Paris · 7 rue des Voyageurs</div>
+      <h1>AGENCE DE VOYAGES</h1>
+      <div class="loader__moon" aria-hidden="true"></div>
+      <div class="loader__status" id="loading-status">On éclaire la vitrine…</div>
+    </div>
+  </div>
+
+  <div class="hud masthead" aria-hidden="true">
+    <span class="masthead__rule"></span>
+    <div>
+      <div class="masthead__eyebrow">Après la fermeture</div>
+      <div class="masthead__title">LA VITRINE<br>DE PLEINE LUNE</div>
+      <div class="masthead__sub">un petit voyage immobile</div>
+    </div>
+  </div>
+
+  <div class="hud hint" id="hint">
+    <span>Tourner le globe · Feuilleter le présentoir · Explorer</span>
+  </div>
+
+  <div class="hud selection" id="selection" aria-live="polite">
+    <div class="selection__kicker" id="selection-kicker">Carnet de voyage</div>
+    <div class="selection__title" id="selection-title">Toscane</div>
+    <div class="selection__line" id="selection-line"></div>
+    <div class="selection__close">Cliquer à nouveau pour refermer</div>
+  </div>
+
+  <div class="tooltip" id="tooltip" aria-hidden="true">
+    <div class="tooltip__title" id="tooltip-title"></div>
+    <div class="tooltip__sub" id="tooltip-sub"></div>
+  </div>
+
+  <button class="reset-view" id="reset-view" type="button" aria-label="Revenir à la vue de la rue">Vue de la rue</button>
+
+  <div class="error-card" id="error-card">
+    <div class="error-card__inner">
+      <strong>La vitrine n’a pas pu être éclairée.</strong><br>
+      <span id="error-message">WebGL n’est pas disponible dans ce navigateur.</span>
+    </div>
+  </div>
+
+  <noscript>Cette vitrine nécessite JavaScript et WebGL.</noscript>
+
+  <script type="module" src="./js/main.js"></script>
+<script src="../camera-limits.js"></script><script src="../scene-ui.js?v=20261114"></script></body>
+</html>

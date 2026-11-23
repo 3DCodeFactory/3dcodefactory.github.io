@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moonlit Pagoda — 月影の塔</title>
+  <style>
+    :root {
+      --ink: #e8e0cf;
+      --muted: #9a9d9b;
+      --amber: #f3b36a;
+      --amber-soft: rgba(243, 179, 106, 0.34);
+      --line: rgba(224, 211, 188, 0.16);
+      --glass: rgba(8, 13, 18, 0.72);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #05090e;
+      color: var(--ink);
+      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      user-select: none;
+    }
+
+    #stage {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 28% 14%, rgba(49, 72, 95, 0.22), transparent 48%),
+        #05090e;
+    }
+
+    #stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 0 130px 28px rgba(0, 2, 6, 0.42);
+      z-index: 2;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      touch-action: none;
+    }
+
+    .hud {
+      position: absolute;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .brand {
+      top: clamp(22px, 4.2vh, 46px);
+      left: clamp(24px, 4vw, 62px);
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      text-shadow: 0 2px 24px rgba(0, 0, 0, 0.8);
+    }
+
+    .seal {
+      width: 35px;
+      height: 48px;
+      border: 1px solid rgba(223, 190, 142, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d8b481;
+      font-family: "WenQuanYi Zen Hei", "Noto Serif CJK SC", serif;
+      font-size: 17px;
+      letter-spacing: 2px;
+      writing-mode: vertical-rl;
+      background: rgba(5, 10, 15, 0.28);
+      backdrop-filter: blur(3px);
+      margin-top: 2px;
+    }
+
+    .brand h1 {
+      font-weight: 400;
+      font-size: clamp(20px, 2.4vw, 33px);
+      line-height: 1;
+      letter-spacing: 0.09em;
+      margin: 0 0 7px;
+      color: #ece5d7;
+    }
+
+    .brand .eyebrow {
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.38em;
+      color: rgba(207, 197, 177, 0.65);
+      margin-bottom: 11px;
+    }
+
+    .brand .jp {
+      font-family: "WenQuanYi Zen Hei", "Noto Serif CJK SC", serif;
+      font-size: 12px;
+      color: rgba(220, 207, 184, 0.55);
+      letter-spacing: 0.62em;
+      margin-top: 9px;
+    }
+
+    .top-note {
+      top: clamp(24px, 4.2vh, 46px);
+      right: clamp(24px, 4vw, 62px);
+      text-align: right;
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 8px;
+      line-height: 1.9;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(204, 202, 192, 0.42);
+      text-shadow: 0 2px 12px #000;
+    }
+
+    .top-note b {
+      display: block;
+      color: rgba(230, 218, 196, 0.72);
+      font-weight: 500;
+      letter-spacing: 0.36em;
+    }
+
+    .controls {
+      left: clamp(18px, 3vw, 48px);
+      bottom: clamp(18px, 4vh, 42px);
+      width: min(306px, calc(100vw - 36px));
+      padding: 17px 18px 15px;
+      background: linear-gradient(140deg, rgba(13, 19, 25, 0.82), rgba(7, 11, 15, 0.7));
+      border: 1px solid rgba(221, 200, 166, 0.14);
+      box-shadow: 0 18px 70px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 248, 232, 0.045);
+      backdrop-filter: blur(13px) saturate(0.8);
+      pointer-events: auto;
+      transition: opacity 350ms ease, transform 350ms ease;
+    }
+
+    .controls::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 18px;
+      width: 46px;
+      height: 1px;
+      background: rgba(243, 190, 123, 0.65);
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+    }
+
+    .panel-title span:first-child {
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.34em;
+      color: rgba(219, 208, 190, 0.54);
+      text-transform: uppercase;
+    }
+
+    .panel-title span:last-child {
+      font-size: 10px;
+      font-style: italic;
+      letter-spacing: 0.08em;
+      color: rgba(196, 183, 160, 0.4);
+    }
+
+    .control {
+      margin: 12px 0 14px;
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 9.5px;
+      letter-spacing: 0.17em;
+      text-transform: uppercase;
+      color: rgba(231, 222, 205, 0.78);
+      margin-bottom: 7px;
+    }
+
+    .control-head em {
+      font-family: inherit;
+      font-style: normal;
+      font-size: 8px;
+      letter-spacing: 0.12em;
+      color: rgba(190, 183, 170, 0.4);
+    }
+
+    .control-head output {
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: var(--amber);
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      display: block;
+      width: 100%;
+      height: 13px;
+      margin: 0;
+      background: transparent;
+      cursor: ew-resize;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 1px;
+      background: linear-gradient(90deg, var(--amber-soft) var(--fill, 50%), rgba(226, 217, 200, 0.14) var(--fill, 50%));
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 8px;
+      height: 8px;
+      margin-top: -3.5px;
+      border-radius: 50%;
+      background: #f1c084;
+      box-shadow: 0 0 10px rgba(244, 173, 90, 0.9), 0 0 2px #fff;
+      border: none;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 1px;
+      background: rgba(226, 217, 200, 0.16);
+    }
+
+    input[type="range"]::-moz-range-progress {
+      height: 1px;
+      background: var(--amber-soft);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 8px;
+      height: 8px;
+      border: none;
+      border-radius: 50%;
+      background: #f1c084;
+      box-shadow: 0 0 10px rgba(244, 173, 90, 0.9);
+    }
+
+    .panel-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 7.5px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(210, 203, 190, 0.34);
+    }
+
+    .panel-foot span:last-child {
+      letter-spacing: 0.05em;
+      text-transform: none;
+      font-style: italic;
+      font-size: 9px;
+      color: rgba(208, 198, 180, 0.36);
+    }
+
+    .actions {
+      right: clamp(18px, 3vw, 48px);
+      bottom: clamp(18px, 4vh, 42px);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      pointer-events: auto;
+    }
+
+    .act {
+      appearance: none;
+      border: 1px solid rgba(225, 208, 180, 0.15);
+      background: rgba(9, 14, 19, 0.55);
+      color: rgba(230, 219, 199, 0.72);
+      padding: 10px 13px;
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      backdrop-filter: blur(9px);
+      transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+    }
+
+    .act:hover {
+      border-color: rgba(243, 183, 106, 0.45);
+      color: #f1d4aa;
+      background: rgba(20, 22, 22, 0.72);
+    }
+
+    .act.primary {
+      color: #e8c18c;
+      border-color: rgba(225, 172, 108, 0.28);
+    }
+
+    .hint {
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 7.5px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(224, 218, 204, 0.24);
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity 1s ease;
+    }
+
+    .toast {
+      left: 50%;
+      bottom: 74px;
+      transform: translate(-50%, 8px);
+      padding: 8px 14px;
+      border: 1px solid rgba(237, 191, 128, 0.2);
+      background: rgba(8, 12, 16, 0.72);
+      color: rgba(245, 205, 153, 0.9);
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 300ms ease, transform 300ms ease;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 18px;
+      background: #05090e;
+      transition: opacity 1.25s ease;
+    }
+
+    .loader.out { opacity: 0; pointer-events: none; }
+
+    .loader .glyph {
+      font-family: "WenQuanYi Zen Hei", "Noto Serif CJK SC", serif;
+      font-size: 32px;
+      color: rgba(213, 198, 172, 0.72);
+      letter-spacing: 0.3em;
+      animation: breathe 3s ease-in-out infinite;
+    }
+
+    .loader .line {
+      width: 110px;
+      height: 1px;
+      background: rgba(225, 205, 175, 0.14);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .loader .line::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 45%;
+      background: rgba(241, 190, 124, 0.55);
+      animation: load 2.1s ease-in-out infinite;
+    }
+
+    .loader .caption {
+      font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(210, 205, 194, 0.3);
+    }
+
+    @keyframes load {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(240%); }
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.9; }
+    }
+
+    .ui-hidden .brand,
+    .ui-hidden .top-note,
+    .ui-hidden .controls,
+    .ui-hidden .actions,
+    .ui-hidden .hint { opacity: 0; pointer-events: none; }
+
+    .ui-hidden .actions,
+    .ui-hidden .controls { pointer-events: none; }
+
+    @media (max-width: 760px) {
+      .brand .jp, .top-note { display: none; }
+      .controls { width: min(280px, calc(100vw - 32px)); }
+      .actions { bottom: 216px; right: 16px; flex-direction: column; align-items: flex-end; }
+      .hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <div class="hud brand">
+      <div class="seal">月</div>
+      <div>
+        <div class="eyebrow">A night study in wood &amp; moon</div>
+        <h1>Moonlit Pagoda</h1>
+        <div class="jp">月影の塔</div>
+      </div>
+    </div>
+
+    <div class="hud top-note">
+      <b>EASTERN TEMPLE</b>
+      Courtyard at the hour of the tiger<br />
+      35.0116° N &nbsp;·&nbsp; 135.7681° E
+    </div>
+
+    <div id="controls" class="hud controls">
+      <div class="panel-title">
+        <span>Light &amp; Atmosphere</span>
+        <span>adjust the night</span>
+      </div>
+
+      <div class="control">
+        <div class="control-head">
+          <span>Hanging lanterns</span>
+          <output id="hangOut">100%</output>
+        </div>
+        <input id="hangGlow" type="range" min="0" max="200" value="100" step="1" aria-label="Hanging lantern brightness" />
+        <div class="control-head" style="margin-top:4px"><em>paper &amp; corded light</em><em>click lanterns to alter</em></div>
+      </div>
+
+      <div class="control">
+        <div class="control-head">
+          <span>Standing lanterns</span>
+          <output id="standOut">100%</output>
+        </div>
+        <input id="standGlow" type="range" min="0" max="200" value="100" step="1" aria-label="Standing lantern brightness" />
+      </div>
+
+      <div class="control" style="margin-bottom:8px">
+        <div class="control-head">
+          <span>Courtyard mist</span>
+          <output id="mistOut">Veil</output>
+        </div>
+        <input id="mist" type="range" min="0" max="100" value="34" step="1" aria-label="Courtyard mist density" />
+      </div>
+
+      <div class="panel-foot">
+        <span>Drag to orbit · scroll to approach</span>
+        <span>夜</span>
+      </div>
+    </div>
+
+    <div class="hud actions">
+      <button class="act" id="resetView" type="button">Reset view</button>
+      <button class="act primary" id="saveImage" type="button">Save still</button>
+    </div>
+
+    <div class="hud hint" id="hint">Drag the courtyard · H hides the interface</div>
+    <div class="hud toast" id="toast"></div>
+  </div>
+
+  <div class="loader" id="loader">
+    <div class="glyph">月影</div>
+    <div class="line"></div>
+    <div class="caption">Falling quiet over the courtyard</div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three.module.js",
+        "three/addons/": "./vendor/addons/"
+      }
+    }
+  </script>
+  <script type="module" src="./scene.js"></script>
+<script src="../camera-limits.js"></script><script src="../scene-ui.js?v=20261114"></script></body>
+</html>

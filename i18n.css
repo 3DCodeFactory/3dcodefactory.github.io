@@ -1,0 +1,19 @@
+body>header{gap:20px}
+body>header nav{margin-left:auto;gap:clamp(12px,1.5vw,22px)}
+.language-switch{display:inline-flex;align-items:center;gap:2px;flex-shrink:0;padding:3px;border:1px solid #d8e2dd;border-radius:7px;background:#edf2ef}
+.language-switch button{border:0;border-radius:4px;padding:4px 7px;background:transparent;color:#6b7b73;font-family:inherit;font-size:11px;font-weight:500;line-height:1.4;white-space:nowrap;min-height:25px}
+.language-switch button[aria-pressed=true]{background:#fff;color:#254d3e;box-shadow:0 1px 3px #213d3010}
+.language-switch button:hover{color:#18382e}
+html[lang=en] #method .method-synthesis.stage-card>.method-explainer>h3{font-size:23px;line-height:1.35}
+html[lang=en] #method .method-synthesis.stage-card>.method-explainer>p:not(.eyebrow){line-height:1.75}
+html[lang=en] .k2-description{line-height:1.5}
+html[lang=en] .k2-card:hover .k2-description,html[lang=en] .k2-card:focus-visible .k2-description{max-height:90px}
+html[lang=en] .traj-vp-footer{min-height:62px;line-height:1.5}
+html[lang=en] #method .stage-card>.flow-intro h3{line-height:1.35}
+html[lang=en] .task-column-header h4{line-height:1.4}
+@media(max-width:1100px){body>header{gap:12px}body>header nav{gap:10px;font-size:11px}.language-switch button{padding-inline:5px}}
+
+.intro h1{font-size:clamp(50px,4.55vw,64px);font-weight:650;letter-spacing:-.045em;line-height:1.04;color:#11241e;margin-bottom:10px}
+html .intro .paper-subtitle{text-wrap:initial;letter-spacing:0;max-width:none;margin:0}
+html .paper-subtitle .hero-lead{display:block;font-family:inherit;font-size:clamp(19px,1.75vw,21.5px);font-weight:450;line-height:1.38;letter-spacing:-.015em;color:#24493d}
+html[lang=en] .paper-subtitle .hero-lead{font-family:inherit;font-size:clamp(19px,1.75vw,21.5px);font-weight:450;line-height:1.38;letter-spacing:-.015em;color:#24493d}

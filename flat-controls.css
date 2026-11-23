@@ -1,0 +1,8 @@
+
+:is(#code .s2s-scenes,.task-details .case-switch,.results-view-switch,.scene-detail .view-tabs,.traj-steps-bar){display:inline-flex;gap:3px;padding:3px;border:1px solid #d8e2dd;border-radius:7px;background:#e6ece9;align-items:center;max-width:100%}
+:is(#code .s2s-scenes,.task-details .case-switch,.results-view-switch,.scene-detail .view-tabs,.traj-steps-bar)>button{margin:0;padding:6px 14px;border:0;border-radius:5px;background:transparent;color:#55665e;font-family:inherit;font-size:12.5px;font-weight:500;line-height:1.4;cursor:pointer;transition:background .15s,color .15s;box-shadow:none}
+:is(#code .s2s-scenes,.task-details .case-switch,.results-view-switch,.scene-detail .view-tabs,.traj-steps-bar)>button:is(.active,[aria-selected="true"],[aria-pressed="true"]){background:#fff;color:#18382e;box-shadow:0 1px 2px #0000000f;font-weight:600}
+button:focus-visible,.paper-links a:focus-visible{outline:2px solid #377c6d;outline-offset:2px}
+
+
+.traj-play-btn:focus:not(:focus-visible){outline:none}

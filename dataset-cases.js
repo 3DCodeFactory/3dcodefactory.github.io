@@ -1,0 +1,507 @@
+const datasetCases = [ {
+    id: "10",
+    title: "河谷栈道",
+    backend: "Blender",
+    views: [ {
+        label: "主视图",
+        src: "assets/dataset-cases/10-hero.webp",
+        width: 1536,
+        height: 1024
+    }, {
+        label: "另一视角",
+        src: "assets/dataset-cases/10-alternate.webp",
+        width: 1200,
+        height: 800
+    }, {
+        label: "局部细节",
+        src: "assets/dataset-cases/10-detail.webp",
+        width: 1200,
+        height: 800
+    }, {
+        label: "输入参考",
+        src: "assets/dataset-cases/10-reference.webp",
+        width: 1536,
+        height: 1024
+    } ],
+    video: "assets/dataset-videos/10-pan-hd.mp4",
+    prompt: "Please create a static 3D environment of a misty Eastern European national-park valley at sunrise, using the reference for composition and mood. The scene should center on a weathered timber boardwalk entering from the lower left, following a mossy rock face and beech trunks, then bending into a damp meadow; a rocky stream with white rapids should occupy the center-right and lead the eye back into the valley. Build depth with low valley mist, midground trees, a flat-topped forested ridge across the upper middle, and a pale warm sky with the sun low at the upper right. Treat the boardwalk, water, vegetation and atmosphere as one coherent landscape, with the foreground wood and railing, stream rocks and foam, and layered mist/ridge silhouettes as the main visual focus. Use weathered gray-brown timber, dark wet stone, clear water with white foam, green-gold beech foliage and blue-gray distant ridges. Keep the scene static: no people, no text, no animation and no interaction.\n\nDeliver an editable .blend project, a GLB model, local asset/texture files and a PNG preview. For final delivery, render the PNG from the completed 3D scene using the same camera position, viewing direction, framing and 3:2 aspect ratio as the reference: boardwalk lower left, stream center-right, ridge across the upper middle and sun upper right.",
+    model: "10",
+    category: "自然场景",
+    summary: "晨雾笼罩的河谷木栈道。风化木栏杆自左下前景蜿蜒深入湿润草甸，右侧溪流乱石与白沫交错，远景层叠林岭与低垂晨光拉开空间纵深。"
+}, {
+    id: "11",
+    title: "雨林花树",
+    backend: "Blender",
+    views: [ {
+        label: "主视图",
+        src: "assets/dataset-cases/11-hero.webp",
+        width: 1536,
+        height: 1024
+    }, {
+        label: "另一视角",
+        src: "assets/dataset-cases/11-alternate.webp",
+        width: 1024,
+        height: 683
+    }, {
+        label: "局部细节",
+        src: "assets/dataset-cases/11-detail.webp",
+        width: 1024,
+        height: 683
+    }, {
+        label: "输入参考",
+        src: "assets/dataset-cases/11-reference.webp",
+        width: 1536,
+        height: 1024
+    } ],
+    video: "assets/dataset-videos/11-pan-hd.mp4",
+    prompt: "I’d like a static 3D forest scene based on the reference image: a cluster of giant flowering Northern Rata trees with three dominant trunks shaping the composition. On the left, a very thick trunk rises from the foreground and runs beyond the top of the frame, its bark heavily covered in moss, ferns, and small epiphytes. Toward the center-right, another massive tree leans and branches outward with long, gnarled limbs reaching across the middle of the scene. On the right, a third huge trunk stands close to the edge, also textured with moss and hanging growth. More slender tree trunks recede into the background between them, creating a strong sense of depth.\n\nThe upper canopy should carry clusters of vivid red rata flowers, concentrated high up and scattered through the branches rather than covering everything evenly. The flowers should read as dense, slightly irregular masses against the green foliage and pale sky openings. The forest floor is covered in dark leaf litter, fallen petals, and low green plants, with large fern fronds spreading across the foreground and around the bases of the trunks. Use natural, slightly muted greens for the moss and undergrowth, deep brown-grey bark, and warm crimson flowers, with soft overcast daylight filtering through the canopy. The mood should feel damp, layered, and ancient, with the foreground ferns and leaf litter crisp enough to read and the background trees fading slightly into the forest haze.\n\nPlease build this as one assembled static scene with no character or creature elements. Keep the camera low, near the forest floor, looking slightly upward into the trunks and canopy, matching the reference image’s viewpoint, direction of observation, framing, and landscape 3:2 aspect ratio. After modeling, render the PNG from the actual 3D scene rather than using a painted backdrop. Deliver the editable .blend project, a GLB model, the local textures/assets used, and the PNG preview.",
+    model: "11",
+    category: "自然场景",
+    summary: "高密度热带雨林生态场景。前景丛生羽状蕨类与苔藓石块，中景巨型树干缠绕气根藤蔓，树冠层盛开簇状红花，展现多层植被遮挡关系。"
+}, {
+    id: "12",
+    title: "温室旧钢琴",
+    backend: "Blender",
+    views: [ {
+        label: "主视图",
+        src: "assets/dataset-cases/12-hero.webp",
+        width: 1536,
+        height: 1024
+    }, {
+        label: "另一视角",
+        src: "assets/dataset-cases/12-alternate.webp",
+        width: 1152,
+        height: 768
+    }, {
+        label: "局部细节",
+        src: "assets/dataset-cases/12-detail.webp",
+        width: 1152,
+        height: 768
+    }, {
+        label: "输入参考",
+        src: "assets/dataset-cases/12-reference.webp",
+        width: 1536,
+        height: 1024
+    } ],
+    video: "assets/dataset-videos/12-pan-hd.mp4",
+    prompt: "Please model a static scene of an abandoned upright piano that has been overtaken by ivy, set inside a derelict glasshouse, following the framing and subject placement of the attached reference photo. The piano is the hero: its dark, crazed wooden case should carry the Wolfgang Hutter treatment — meticulous, jewel-like ornament worked into the front panel, the fallboard and the carved legs as enamel-and-gold scrollwork and mosaic-flower inlays — so the instrument reads as ornate and slightly surreal rather than simply rotten. Build the full piano as a believable object: case, lid, open keyboard with individually built aged keys, the missing upper front panel that exposes the pin block and string frame, the collapsed lower panel with a fallen plank leaning into the opening, and the carved legs, one of which is broken and canted. Let ivy enter from the top and the right, cascade through the broken panel and trail across the keys and down to the floor, keeping the keyboard line and the left-hand ornament readable as the visual focus.\n\nSurround the piano with only as much set as the photograph needs: iron-framed glasshouse panes and glazing bars behind, flagstone paving with moss and leaf litter underfoot, a weathered stone planter at the right edge and a pale stone figure at the far left. Keep the palette desaturated and cool overall, with the ornament providing concentrated jewel tones.\n\nDeliver an editable .blend project, a GLB export, all local texture assets and PNG previews. When the model is finished, render the main PNG straight from the actual 3D scene using the same camera position, viewing direction, framing and 3:2 aspect ratio as the reference image; no composited or painted-in elements.",
+    model: "12",
+    category: "室内空间",
+    summary: "荒废玻璃温室内的旧式立式钢琴。常春藤自锈蚀钢架垂落并爬满琴身，敞开的音板露出内部金属弦列与木槌结构，地面散落枯叶与碎石。"
+}, {
+    id: "13",
+    title: "地图绘图室",
+    backend: "Blender",
+    views: [ {
+        label: "主视图",
+        src: "assets/dataset-cases/13-hero.webp",
+        width: 1536,
+        height: 1024
+    }, {
+        label: "另一视角",
+        src: "assets/dataset-cases/13-alternate.webp",
+        width: 1152,
+        height: 768
+    }, {
+        label: "局部细节",
+        src: "assets/dataset-cases/13-detail.webp",
+        width: 1280,
+        height: 853
+    }, {
+        label: "输入参考",
+        src: "assets/dataset-cases/13-reference.webp",
+        width: 1536,
+        height: 1024
+    } ],
+    video: "assets/dataset-videos/13-pan-hd.mp4",
+    prompt: "I need a static, photoreal-leaning interior of a municipal planning archive's drafting room — the kind of room where a district's network map is still put together by hand and left up on the board. The centerpiece is the inclined drafting table: a scarred oak top about 1.9 × 1.2 m, tilted roughly 32°, carried on a black cast-iron trestle with a footrest and crank. Across it lies the map, built from overlapping paper sheets rather than printed as one piece — a printed street grid, the pale bend of a river, red and blue network lines inked over it, colored pins standing about 10 mm proud of the surface and joined by fine threads, and small handwritten annotation slips layered on top. The pins and threads have to read as real objects that cast shadows, not as painted marks.\n\nThe room around it needs to hold up at the same fidelity: the multi-pane sash window wall on the left, about 2.4 m tall with the sill at 0.85 m, with city rooftops and a clock tower visible beyond; the rear wall papered with pinned map sheets and framed prints; a black shelf of books and boxes; a black dome desk lamp on an articulated arm at the right; a nine-drawer plan chest at the left; rolled map tubes leaning in a corner; a round-seated stool on iron legs; a patterned rug over plank flooring; and a trailing plant at the sill. Keep the palette anchored in warm ochre and amber wood, sepia and cream paper with foxing, blackened iron, and muted red-and-blue accents, with cool daylight entering from the left and warm bounce inside.\n\nThe visual emphasis is the light: a low sun through the left window laying long soft shadows across the table and floor, dust visible in the beam, and a tonal falloff toward the right rear so the map stays the brightest, most detailed area.\n\nDeliver an editable .blend with relative texture paths, a GLB export in meters with materials intact, all local texture assets, and a PNG preview rendered from the actual 3D scene. Name objects, collections, and materials clearly so the map sheets, pins, and threads can be re-arranged later.\n\nFor the final shot, render the PNG from the finished scene using the same camera position, viewing direction, framing, and 3:2 landscape aspect ratio as the reference image: camera roughly 1.5 m above the floor at the front-left of the table, looking slightly down and toward the back-right, with the window at frame left, the drafted map filling the lower half, and the map-covered rear wall occupying the upper right.",
+    model: "13",
+    category: "室内空间",
+    summary: "市政规划档案馆绘图室。斜射日光穿过高窗洒向倾斜绘图桌，墙面铺满巨幅古旧地形图，四周环绕实木图纸柜、地球仪与台灯。"
+}, {
+    id: "14",
+    title: "雪地补给屋",
+    backend: "Blender",
+    views: [ {
+        label: "主视图",
+        src: "assets/dataset-cases/14-hero.webp",
+        width: 1152,
+        height: 768
+    }, {
+        label: "另一视角",
+        src: "assets/dataset-cases/14-alternate.webp",
+        width: 1536,
+        height: 1024
+    }, {
+        label: "局部细节",
+        src: "assets/dataset-cases/14-detail.webp",
+        width: 1152,
+        height: 768
+    }, {
+        label: "输入参考",
+        src: "assets/dataset-cases/14-reference.webp",
+        width: 1536,
+        height: 1024
+    } ],
+    video: "assets/dataset-videos/14-pan-hd.mp4",
+    prompt: "Using the attached reference as the camera, mood, and composition target, build a static 3D interior of a northern ranger station winter supply shed. Capture the specific lived-in storage space rather than a generic cabin: a frost-thick door frame opening onto a blue-gray snow forest, rough plank walls and floor, stiff coils of frozen rope and iron traps hanging beside an old unlit lantern, a cluttered workbench with black metal cases, crates and fuel cans, a six-pane frosted window, and heavy timber shelving loaded with folded tarpaulins, wooden boxes, jars and jerry cans. Keep every prop in its assembled, static position; no interaction or animation is required.\n\nPrioritize the cold atmosphere and clear material separation: rime and ice crust on the doorframe and metalwork, rope fibers stiffened by frost, pitted iron, worn wood grain, dull galvanized metal, heavy canvas folds, and the icy blue exterior seen through the opening. Use cool exterior daylight as the key source with low-intensity cold bounce inside; the lantern remains unlit. Maintain believable clutter depth without blocking the doorway, window, or main shelf silhouette.\n\nDeliver an editable .blend project with named collections and materials, a GLB export, all local texture assets, and a PNG preview rendered from the actual 3D scene. After modeling and look development, render the final PNG from the same camera position, view direction, framing, and 3:2 aspect ratio as the reference image. The preview must come from the 3D scene, not a paint-over or photo composite.",
+    model: "14",
+    category: "室内空间",
+    summary: "极寒林区的木构雪地补给屋。推开的木门外是风雪寒林，屋内暖光映照多层物资货架、燃料桶、雪鞋与维修工具台，冷暖色调对比鲜明。"
+}, {
+    id: "15",
+    title: "手动印刷机",
+    backend: "Blender",
+    views: [ {
+        label: "主视图",
+        src: "assets/dataset-cases/15-hero.webp",
+        width: 1280,
+        height: 720
+    }, {
+        label: "另一视角",
+        src: "assets/dataset-cases/15-alternate.webp",
+        width: 1280,
+        height: 720
+    }, {
+        label: "局部细节",
+        src: "assets/dataset-cases/15-detail.webp",
+        width: 1280,
+        height: 720
+    }, {
+        label: "输入参考",
+        src: "assets/dataset-cases/15-reference.webp",
+        width: 1280,
+        height: 720
+    } ],
+    video: "assets/dataset-videos/15-pan-hd.mp4",
+    prompt: "Create a Blender scene and real rendered output of a small antique tabletop roller printing press with its ink tins, faithfully reconstructing the supplied reference asset rather than substituting a generic machine. The press is mounted on a thick rectangular wooden work board and occupies the left and center of the board; a stepped pile of small printing-ink tins stands at the right. Model two heavy, nearly black cast-iron side frames that carry a horizontal roller and a flat impression bed/table plate. Give the frames thick irregular edges, rounded upper ends, circular bearing bosses, bolted joints, and an open cutout near the lower edge. The front frame plate is fastened with several dome-head or hex bolts, and its ends are clamped by large round nuts. Include the visible side train of a small gear, a short shaft, a sleeve, and bearing bosses below and behind the front frame, plus a long slender black lever/handle projecting at the left side and a curved black handle/lever at the lower front. The horizontal roller is held between the side frames; its visible axle end has a small gear and short sleeve. A vertical threaded adjuster passes through a top crossbeam above the roller and ends in a horizontal T-shaped handle with dark cylindrical grips; a second smaller T-handle/rod set sits slightly behind it. Give the crossbeam lightening holes. Preserve the connections among roller, bed plate, side frames, gears, shafts, bolts, front plate, and top adjuster, with no invented mechanisms. A thin printed sheet or booklet lies flat on the small bed/table area between the roller and the ink tins, showing a dense multicolor illustration in yellow, red, green, blue, and dark ink, with a slight lift at one edge. A small off-white rectangular paper label with faint dark handwriting is affixed to the lower front cross member. The wooden work board has a pale tan, slightly fibrous composite or worn wood surface, rough rounded edges, dark handling stains, and a worn dark trim/support strip along the front edge. Approximately ten small cylindrical ink tins stand in a staggered pile on the right side of the board: black press-on lids are distinct from the wrapped labels, which are glossy printed in red, yellow, blue, dark blue, green, teal, and pink with white bands, small graphics, and text. Keep the metal materials specific: dark cast iron with pitting, wiped oil films, bright polished wear along edges and bolt heads, and visible scratches; brighter worn steel on the roller and adjuster; matte fibrous wood; thin matte paper; satin black tin lids; slightly glossy printed labels with small scuffs and visible wrap seams. Do not make all surfaces the same roughness or invent decorative wear beyond the visible oil stains, scratches, and polished edges. Display the complete asset on a simple neutral light-gray seamless floor/backdrop with a soft contact shadow and unobtrusive key/fill lighting; no room, scenery, extra props, or decorative pedestal. Use a static front-left three-quarter elevated inspection camera matching the supplied reference framing, with the board receding to the right, the press on the left/center, and all ink tins visible at the right. Render the default final.png from the delivered Blender project at 16:9, showing the full asset. Implement exactly two working native Blender inspection interactions. First, provide the camera object CAM_Detail_RollerAdjuster: selecting it in the Outliner and pressing Ctrl+Numpad0 must switch to a close, readable inspection view of the horizontal roller, side gear and short shaft, bearing boss, vertical screw through the crossbeam, and horizontal T-handle. Second, provide the area light object LGT_Raking_Metal, off by default: toggling its Outliner visibility/renderability icons in Rendered viewport shading must add a low raking highlight that reveals cast-iron pitting, wiped oil streaks, polished edge wear, and label gloss, and toggling it off must restore the exact default appearance. Do not add any other interactive controls or animation. Execute the scene in Blender, inspect the rendered final.png, correct modeling, scale, framing, lighting, and material errors, and do not use the reference image as a flat background or photographic composite. Save an editable scene.blend, a reproducible Python script that rebuilds the scene, all local/packed assets, a GLB export of the asset, final.png, and a README that documents the render settings and the exact operation paths for CAM_Detail_RollerAdjuster and LGT_Raking_Metal.",
+    model: "15",
+    category: "机械与工业",
+    summary: "复古桌面滚筒印刷机与四层油墨罐。完整建模镂空铸铁机架、压印滚筒、外露啮合齿轮组、调压丝杆与弧形摇柄，呈现精密的机械装配关系。"
+}, {
+    id: "17",
+    title: "月下楼阁",
+    backend: "Three.js",
+    views: [ {
+        label: "主视图",
+        src: "assets/dataset-cases/17-hero.webp",
+        width: 1536,
+        height: 1024
+    }, {
+        label: "侧向全景",
+        src: "assets/dataset-cases/17-alternate.webp",
+        width: 1200,
+        height: 800
+    }, {
+        label: "斗拱细节",
+        src: "assets/dataset-cases/17-detail.webp",
+        width: 1200,
+        height: 800
+    }, {
+        label: "输入参考",
+        src: "assets/dataset-cases/17-reference.webp",
+        width: 1536,
+        height: 1024
+    } ],
+    video: "assets/threejs-videos/17-pan-hd.mp4",
+    demo: "case-17",
+    prompt: "I’d like to create a cinematic 3D night scene of an ancient East Asian temple courtyard, using the attached reference for the camera angle and overall composition. The main subject is a tall, multi-tiered wooden pagoda rising near the center-right, with layered tiled roofs, deep eaves, carved brackets, and a weathered stone base. Broad worn stone steps lead up to its entrance, and the foreground is a wet stone courtyard that catches warm reflections. On the left, a lower timber pavilion with a hanging paper lantern frames the view; on the right, a tall carved stone marker and a dark tree trunk sit close to the viewer. The background is a ring of dense, misty forested hills, with a bright full moon in the upper left sky and soft clouds around it. I want the mood to feel quiet, staged, and slightly mysterious, like a large-format night photograph: deep blue-grey shadows, cool moonlight, warm amber lanterns, wet stone, aged wood, moss, and soft volumetric haze. Use a wide, slightly low viewpoint so the pagoda feels monumental and the lanterns lead the eye into the courtyard. I’d like to be able to interact with the hanging and standing lanterns to make their warm glow brighter or dimmer, and see that change ripple across the carved wood, stone steps, and wet paving. I’d also like to shift the mist between a thin veil and a denser drift, so the moonlight and pagoda silhouette change while the scene stays calm. When it’s finished, please export a PNG from the actual 3D work. For this image-based task, keep the same camera position, viewing direction, framing, and aspect ratio as the reference image. In meeting the above requirements, please give full play to your creativity to enhance the overall aesthetic, composition, material texture, and lighting, making the work attractive and complete.",
+    category: "建筑与街景",
+    summary: "夜色薄雾中的古建重檐楼阁。暖色纸灯笼沿着石阶与木构回廊铺开，照亮檐下繁复斗拱与青瓦屋面，与清冷月光形成静谧的东方庭院氛围。"
+}, {
+    id: "18",
+    title: "花车制作机库",
+    backend: "Three.js",
+    group: "threejs-selected",
+    video: "assets/threejs-videos/18-pan-hd.mp4",
+    views: [ {
+        label: "主视图",
+        src: "assets/threejs-videos/18-0000.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角一",
+        src: "assets/threejs-videos/18-0032.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角二",
+        src: "assets/threejs-videos/18-0064.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "终点视图",
+        src: "assets/threejs-videos/18-0095.webp",
+        width: 1920,
+        height: 1280
+    } ],
+    demo: "case-18",
+    prompt: "Using the reference image as my visual anchor, I’d like a 3D web piece of a huge Thanksgiving parade float storage hangar the night before the parade. The main focus is a towering algorithm-themed float in the center: stacked black server cabinets and drive bays bristling with silver and blue cable bundles that loop around the racks like ribbons, with small status lights blinking here and there. A metal safety rail wraps the base, and the lower edge is finished with a dense skirt of silver and deep-blue metallic fringe that catches the light. Off to the left sit a dark road case and a round globe prop with a dark blue, map-like surface; a circuit-board-patterned panel stands beside the float. To the right, a white arch shape and a small shed-like float element recede into the hangar. A bright orange step ladder stands in front of the server stack, and black cable ramps and loose cords snake across the polished concrete floor toward the viewer. The hangar itself is vast and industrial, with exposed roof trusses, cool overhead work lights, and a big open doorway on the right letting in warm streetlights and distant city glow. The mood is backstage, cold metal and glitter, with strong reflections on the concrete and a quiet nighttime hush.\n\nI’d love to follow a thick cable run with my pointer and see it tighten slightly and send a pulse of light along the line, as if the whole float is waking up for a moment. I also want to nudge the lighting from the hangar’s cold work-light wash toward a warmer pre-dawn rehearsal glow and watch the floor reflections and the float’s silver/blue fringe change with it.\n\nOnce it’s done, please export a PNG from the actual 3D work. Since I’ve supplied a reference image, keep the same camera position, viewing direction, framing and aspect ratio. In the final render, preserve the low, wide view toward the central float, with the ladder near the foreground and the open hangar door pulling the eye to the right.\n\nWhile meeting the above, please fully use your creative ability to improve the overall beauty, composition, material quality, and lighting, making the work attractive and polished.",
+    category: "机械与工业",
+    summary: "大型工业机库内的巡游花车组装现场。高挑钢结构桁架下悬垂密集电缆，工作平台与脚手架环绕未完工的巨型花车骨架，聚光灯束穿透空气。"
+}, {
+    id: "19",
+    title: "充电与检修车间",
+    backend: "Three.js",
+    group: "threejs-selected",
+    video: "assets/threejs-videos/19-pan-hd.mp4",
+    views: [ {
+        label: "主视图",
+        src: "assets/threejs-videos/19-0000.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角一",
+        src: "assets/threejs-videos/19-0032.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角二",
+        src: "assets/threejs-videos/19-0064.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "终点视图",
+        src: "assets/threejs-videos/19-0095.webp",
+        width: 1920,
+        height: 1280
+    } ],
+    demo: "case-19",
+    prompt: "Please make a 3D web piece based on the reference image: a robotic inspection and charging bay inside a modern data center. The space should read as a long, narrow service aisle with a strong one-point perspective, like the photo, and I want the same eye-level camera position, viewing direction, framing, and aspect ratio as the reference. On the right, tall black server cabinets form a dense wall of doors, mesh panels, and small handle details, receding toward the back; on the left, a row of freestanding black-and-grey charging pedestals stands closer to the wall, with empty charging sockets, thick looping cables, and small status lights. Above, metallic cable trays and conduits run the length of the ceiling, with a red warning beacon glowing near the far end. The floor should be raised anti-static tiling with a perforated texture that catches cold blue-white reflections, while the overhead lights create a clean, slightly moody industrial atmosphere. I want the feeling of order, readiness, and quiet machine infrastructure. I'd like to interact with one of the free charging docks: when I engage it, the dock should respond with a small status change, a brief light pulse along the cable, and a subtle shift in the floor reflection, so the bay feels like it has moved from idle to ready. I'd also like to explore the far warning beacon, watching a short pulse travel across the ceiling trays and cabinet edges to change the mood of the aisle. When finished, please render a PNG from the actual 3D work, keeping the same camera angle, viewing direction, framing, and aspect ratio as the reference image. In meeting the above needs, please fully use your creativity to improve the overall aesthetics, composition, material texture, and lighting so the piece feels attractive and complete.",
+    category: "机械与工业",
+    summary: "现代化机器人充电与检修车间。沿着金属格栅通道整齐排布高功率充电桩柜体、工业机械臂与检修控制台，顶棚冷光灯带勾勒出硬朗的科技空间。"
+}, {
+    id: "20",
+    title: "地下涂鸦通道",
+    backend: "Three.js",
+    group: "threejs-selected",
+    video: "assets/threejs-videos/20-pan-hd.mp4",
+    views: [ {
+        label: "主视图",
+        src: "assets/threejs-videos/20-0000.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角一",
+        src: "assets/threejs-videos/20-0032.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角二",
+        src: "assets/threejs-videos/20-0064.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "终点视图",
+        src: "assets/threejs-videos/20-0095.webp",
+        width: 1920,
+        height: 1280
+    } ],
+    demo: "case-20",
+    prompt: "I want to create a 3D scene of an abandoned underground passage dominated by a geometric graffiti wall. The left wall should be the main focus and sit close in the foreground, covered in aged pale tiles with large hard-edged blocks of cyan, yellow, black, and white, along with black spray-painted lettering and tags layered over them. Across from it, the right wall should recede more into shadow, carrying its own denser graffiti marks. The ceiling should feel low and heavy, made of rough gray concrete with exposed pipes and a line of fluorescent fixtures that stretches toward the far end. The floor should be dark and wet, with shallow puddles reflecting the lights and the wall colors, and with scattered scraps of paper and debris along the edges. The passage should lead away into a dark, slightly rising exit area, with the lighting and reflections fading into blackness. I want the atmosphere to feel damp, neglected, and quietly cinematic, with the cyan and yellow graffiti standing out against the grime. The default view should put me near the entrance of the tunnel, looking straight down its length, with the left wall prominent and the wet floor leading the eye toward the dark end. I'd like to be able to trigger the ceiling lights to flicker unevenly; as they do, I want to see the reflections in the puddles pulse and the color blocks on the left wall shift between flat shadow and brief glare. I'd also like to move my attention along the left wall and see how the spray-painted lettering and tags read over the tiled geometry, with the light grazing across the surface so the texture and layering become more noticeable. For the final capture, please export a PNG from the actual 3D work; since I provided a reference image, keep the same camera position, viewing direction, framing, and aspect ratio as the reference. While satisfying the above requirements, please fully leverage your creativity to enhance the overall aesthetic, composition, material texture, and lighting, making the work attractive and polished.",
+    category: "建筑与街景",
+    summary: "废弃地下混凝土涂鸦通道。大面积几何涂鸦覆盖斑驳拱墙，顶板外露通风管线与昏黄壁灯向远处延伸，积水地面映射出深邃的冷暖反光。"
+}, {
+    id: "21",
+    title: "花饰艺术客厅",
+    backend: "Three.js",
+    group: "threejs-selected",
+    video: "assets/threejs-videos/21-pan-hd.mp4",
+    views: [ {
+        label: "主视图",
+        src: "assets/threejs-videos/21-0000.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角一",
+        src: "assets/threejs-videos/21-0032.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角二",
+        src: "assets/threejs-videos/21-0064.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "终点视图",
+        src: "assets/threejs-videos/21-0095.webp",
+        width: 1920,
+        height: 1280
+    } ],
+    demo: "case-21",
+    prompt: "Using the attached reference image as a starting point, I'd like a three-dimensional web scene of a spacious, beautiful bohemian interior in an Art Nouveau mood — colorful, lived-in, and richly detailed. The room opens from a doorway in the near left foreground toward a large arched stained-glass window across the back wall, which is the main focal point. The window has flower-and-vine patterns in soft amber, yellow, and pale green glass, divided by dark wooden mullions. To the left, the wall is warm faded terracotta; to the right, it is muted sage green with gently worn plaster textures. On the left side sits a long carved wooden sideboard with an oval mirror above it, and a tall leafy plant beside a dark doorway leading further back. At the center is a curved, deep-seated rust-brown velvet sofa piled with patterned cushions, facing a low round wooden coffee table. The floor is covered with large layered rugs in dusty reds, rose, indigo, and faded cream patterns. On the right, there are a tall bookshelf with vines and trailing plants, a soft armchair with a patterned throw, and stacks of books. Brass details, such as the floor lamp arching over the sofa, small bowls, and picture frames, should catch the light. The atmosphere should feel warm, artistic, and sunlit, with soft afternoon light filtering through the stained glass and casting colored patches across the rugs and furniture. I'd love to be able to change the time of day and see the light through the stained-glass window shift, with the colored beams moving across the rug and sofa and the glass flowers glowing more or less intensely. When finished, please export a PNG directly from the actual 3D scene, matching the same camera position, viewing direction, framing, and aspect ratio as the reference image. While meeting all of the above, please give full play to your creativity and enhance the overall beauty, composition, material quality, and lighting so the piece feels appealing and complete.",
+    category: "室内空间",
+    summary: "新艺术风格（Art Nouveau）花饰客厅。彩绘玻璃拱窗将柔和天光引入室内，繁复花纹地毯、丝绒沙发、黄铜落地灯与绿植共同构成细腻的陈设层次。"
+}, {
+    id: "22",
+    title: "珠宝修复工作台",
+    backend: "Three.js",
+    group: "threejs-selected",
+    video: "assets/threejs-videos/22-pan-hd.mp4",
+    views: [ {
+        label: "主视图",
+        src: "assets/threejs-videos/22-0000.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角一",
+        src: "assets/threejs-videos/22-0032.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角二",
+        src: "assets/threejs-videos/22-0064.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "终点视图",
+        src: "assets/threejs-videos/22-0095.webp",
+        width: 1920,
+        height: 1280
+    } ],
+    demo: "case-22",
+    prompt: "I’d like to build a close-up 3D scene of a watchmaker and jewelry restorer’s workbench, using the reference image as the exact camera and composition guide. The view looks slightly down across a worn wooden bench, with a dark green velvet mat occupying the center foreground. On the velvet, small brass gears, tiny gold-toned wheels, burgundy and emerald jewel-like parts, and a delicate platinum filigree brooch with a deep red stone are scattered at different scales, some clustered and some isolated. A long steel tweezers and a wooden-handled tool rest near the front edge, while a metal magnifying loupe on an articulated arm stands to the right of the mat. On the left, a large glass jar with a metal lid catches the lamp light; behind it, a shallow tray of watch dials and small parts. A warm tungsten task lamp arcs in from the upper left, its shade dominating that corner and casting a soft pool of light across the velvet. To the right, a dark wooden block holds many slender screwdrivers and picks. The background is a wall of small labeled drawers in dark wood, with a large old clock face at the upper right and a few blurred containers and tools on the counter behind. The mood should be focused, intimate, and slightly hushed, with rich amber highlights, deep brown shadows, glass and polished metal reflections, and a velvety texture that makes the tiny components feel precious. The color palette should stay close to warm brass, platinum, oxblood, emerald, dark green, and aged wood.\n\nI’d love to be able to swing the magnifying loupe over the platinum filigree brooch and see the stone settings and fine metal texture come into crisp focus, with the lamp’s reflection sliding across the facets as the angle changes. I also want to gently move one of the loose brass gears or jewel-toned parts on the velvet and watch it settle, rotate a little, and catch the light differently against the dark fabric.\n\nWhen finished, please render a PNG from the actual 3D scene, keeping the same camera position, viewing direction, framing, and aspect ratio as the reference image. While meeting the above requirements, please give full play to your creativity to enhance the overall aesthetics, composition, material texture, and lighting, making the work attractive and polished.",
+    category: "机械与工业",
+    summary: "微距视角的钟表与珠宝修复工作台。深绿工作垫上散落精密齿轮、宝石戒托、镊子与放大镜，近景暖色台灯在金属工具与切面宝石上投下锐利高光。"
+}, {
+    id: "23",
+    title: "旧木与余晖",
+    backend: "Three.js",
+    group: "threejs-selected",
+    video: "assets/threejs-videos/23-pan-hd.mp4",
+    views: [ {
+        label: "主视图",
+        src: "assets/threejs-videos/23-0000.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角一",
+        src: "assets/threejs-videos/23-0032.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角二",
+        src: "assets/threejs-videos/23-0064.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "终点视图",
+        src: "assets/threejs-videos/23-0095.webp",
+        width: 1920,
+        height: 1280
+    } ],
+    demo: "case-23",
+    prompt: "我想做一个以老木墙近景为主体的三维网页作品，参考图就是这张木墙照片：画面几乎被竖向拼接的旧木板占满，木板之间留着细细的暗缝，表面有清晰的直纹、深浅不一的木节、干裂纹和小黑钉。整体是温暖的蜂蜜棕和烟褐色，局部被斜射进来的日光刷亮，左侧边缘有一点更亮的背景和模糊的室内痕迹，右侧木板更暗更粗粝，形成由亮到暗的层次。木材质感要经得起贴近看：纹理有起伏，裂纹有深浅，钉帽带一点旧金属的哑光，光线扫过时能看出干木头的纤维和细微粉尘感。默认视角就按参考图来，近距离、稍稍侧着观察这面木墙，竖向木板填满画面，保持同样的取景和画幅比例。希望能在木墙前移动一束暖光，让光沿着木纹和板缝慢慢掠过，木节和裂纹的明暗跟着变化，像午后阳光在旧木头上游走；也想点按某一个大木节，看裂纹周围是否会出现更深的琥珀色层次和细微的木屑/树脂光泽变化，但具体怎么触发由制作方决定。完成后请从实际三维作品输出PNG；这张带图任务要与参考图保持相同机位、观察方向、取景范围和画幅比例。在满足上述需求的前提下，请充分发挥创作能力，提升整体美感、构图、材质质感与光影表现，让作品具有吸引力和完成度。",
+    category: "建筑与街景",
+    summary: "夕阳掠射下的老旧木墙近景。竖向拼接的风化木板布满深浅木纹、树节疤痕、干裂细缝与锻铁钉头，重点检验程序化材质的凹凸肌理与光影。"
+}, {
+    id: "24",
+    title: "夜间仓库",
+    backend: "Three.js",
+    group: "threejs-selected",
+    video: "assets/threejs-videos/24-pan-hd.mp4",
+    views: [ {
+        label: "主视图",
+        src: "assets/threejs-videos/24-0000.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角一",
+        src: "assets/threejs-videos/24-0032.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角二",
+        src: "assets/threejs-videos/24-0064.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "终点视图",
+        src: "assets/threejs-videos/24-0095.webp",
+        width: 1920,
+        height: 1280
+    } ],
+    demo: "case-24",
+    prompt: "I’d like a 3D web piece based on the attached reference: an empty warehouse interior that feels like a liminal space caught in a grainy film photograph. The view is from near the left side of the hall, looking deep toward the far wall. In the near left foreground, a thick yellow safety column and a metal door anchor the edge; the ceiling is a dark web of steel trusses that recedes into black. The concrete floor takes up much of the lower view, worn and marked with tire scuffs and small bits of debris. Most of the room is swallowed by shadow, with a wide, soft flashlight glow spreading across the floor in the middle distance and a single brighter opening far at the back.\n\nThe mood should be mysterious and slightly uneasy—deep blacks, dirty concrete, cold metal, muted yellow accents, and a flash-photo contrast that makes the lit floor feel exposed while the edges disappear. I want to be able to sweep a flashlight beam across the floor and nearby columns, seeing the beam pick out texture, dust in the air, and shifting shadows as it moves. I’d also like to trigger a small atmospheric change, like the far doorway light flaring or the overhead fixtures flickering, so the distant opening pulls attention and the space briefly feels less stable.\n\nPlease keep the space empty and believable, with the architectural elements and lighting doing the work. For final delivery, export a PNG from the actual 3D scene, keeping the same camera position, viewing direction, framing, and aspect ratio as the reference image. As long as the above is met, please bring your own creative judgment to the overall beauty, composition, material quality, and lighting so the piece feels compelling and finished.",
+    category: "建筑与街景",
+    summary: "夜间大跨度钢结构空置仓库。微启的卷帘门外射入一束强光，在布满灰尘与车轮印记的水泥地面上拉出长影，凸显大尺度工业建筑的空旷感。"
+}, {
+    id: "25",
+    title: "月球旅行橱窗",
+    backend: "Three.js",
+    group: "threejs-selected",
+    video: "assets/threejs-videos/25-pan-hd.mp4",
+    views: [ {
+        label: "主视图",
+        src: "assets/threejs-videos/25-0000.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角一",
+        src: "assets/threejs-videos/25-0032.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "运镜视角二",
+        src: "assets/threejs-videos/25-0064.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "终点视图",
+        src: "assets/threejs-videos/25-0095.webp",
+        width: 1920,
+        height: 1280
+    } ],
+    demo: "case-25",
+    prompt: "Please make a three-dimensional web piece of an old-fashioned travel agency window at dusk, viewed straight on from the sidewalk. The scene is built around a deep navy display board behind the glass, with a large hand-painted moon travel poster at the center: a huge full moon over a dark sea and rocky coast, cream lettering and a small line of script, surrounded by a few smaller landscape posters stacked on the left. To the right of the poster stands a tiered brochure rack filled with many small destination cards, and near its base sits a small globe on a stand. The window is framed by heavy dark wood with visible grain and a little dust; outside, pale stone, a dark plaque, a potted plant, and a black bollard anchor the street edge. Inside, shelves and warm lamps recede into shadow. Use deep navy, aged cream, muted landscape colors, dark walnut wood, dusty glass, and the warm amber reflections of a streetlamp. The mood should be quiet, nostalgic, and slightly mysterious, with the moon poster as the brightest focal point and the brochure rack making a dense, colorful counterpoint.\n\nI would like to browse the rack: when I choose one of the brochure cards, it should ease forward and open or turn to reveal a different illustrated destination, while the surrounding cards settle and the light shifts across the paper. I also want to be able to turn the small globe beside the rack and see its surface slowly rotate under the glass reflections, making the moon poster's glow feel connected to it. When finished, render a PNG from the actual 3D artwork, matching the reference image's camera position, viewing direction, framing, and aspect ratio. While meeting the above requirements, please fully leverage your creativity to enhance overall aesthetics, composition, material texture, and lighting, making the work attractive and complete.",
+    category: "建筑与街景",
+    summary: "暮色中的复古旅行社街边橱窗。深色胡桃木展架内陈列着巨幅发光月球旅行海报、航线宣传册与黄铜地球仪，玻璃橱窗映出淡淡的街景反射。"
+}, {
+    id: "26",
+    title: "工业泵站",
+    backend: "Three.js",
+    category: "工业空间",
+    demo: "case-29",
+    views: [ {
+        label: "主视图",
+        src: "assets/dataset-cases/29-hero.png",
+        width: 1536,
+        height: 1024
+    }, {
+        label: "输入参考",
+        src: "assets/dataset-cases/29-reference.png",
+        width: 1536,
+        height: 1024
+    } ],
+    summary: "哥特式泵站中庭，冷光尖拱窗映入浅水石地，铜阀门与泵体可触发水面变化。",
+    prompt: "I’d like to build a 3D scene based on the attached reference image: an old-town Gothic industrial pumping station atrium, with a tall, damp interior where pointed-arch windows at the far end let in misty, cold daylight. The view should look down the central aisle toward those windows, with the wet stone floor in the foreground catching long reflections of the arches; the shallow water should feel like a thin skin over dark paving. On the left, a heavy cast-iron staircase climbs diagonally out of frame, and below it sits a worn workbench with a large copper valve wheel, pipes, and small maintenance tools. On the right, stone columns, a warm amber wall lamp, and some leaning tools and containers create a darker edge. In the middle distance, behind a low railing, the pumping machinery stands as a dark green-black mass, with pipes rising and curving toward the back. A faded city waterworks map covers part of the left wall. Keep the palette cool and humid overall — grey-blue window light, green-black iron, brass and copper highlights, and a single warm lamp — with a sense of echoing drips and cold air. I want to be able to disturb the shallow water and watch how the arched window reflections break into ripples, drift, and slowly settle back. I’d also like to turn the copper valve wheel beside the workbench and see some response in the water or pump mechanism, with a small mechanical shift and a change in the water movement or reflections. For the final shot, please render a PNG from the actual 3D scene and keep the same camera position, viewing direction, framing and aspect ratio as the reference image. While meeting all of the above, please fully use your creativity to improve the overall beauty, composition, material texture and lighting so the piece feels attractive and complete."
+}, {
+    id: "28",
+    summary: "山巅岩石上的彩绘雕塑感城堡群，层叠云海环绕主堡、副塔与垛口城墙，低垂夕阳拉出戏剧化色块明暗。",
+    title: "云端城堡",
+    backend: "Blender",
+    model: "28",
+    category: "城堡与建筑",
+    prompt: "I'd like to commission a static installation maquette titled \"Castle in the Clouds\", using the attached image for composition and camera and treating the subject through Candido Portinari's riotous color language. The tableau should read as one sculptural landscape: a fortified castle complex on a rocky crag at right of center, a luminous sea of clouds across the middle ground, distant mountain silhouettes, a low sun at the left, and a rocky, grass-tufted ledge in the lower-left foreground. The treatment should be expressive rather than naturalistic — saturated color blocking, faceted masses, and visible surface character in the spirit of Portinari's painting.\n\nPlease build the castle as a legible assembly of keep, secondary towers, curtain walls, crenellations, gatehouse, and two banners; give the crag distinct ledges and fissures with small conifer clusters. The cloud sea should be layered sculptural volumes, with foreground clouds overlapping the base of the crag and the background receding toward the horizon. Keep the sun disc and sky backdrop graphic and stylized.\n\nThe work is static and fully assembled, with no interaction or functional requirements. Deliver an editable .blend project, a GLB export, all local texture/asset files, and a PNG preview. After modeling, render the final PNG from the actual 3D scene using the same camera position, viewing direction, framing, and 3:2 landscape aspect ratio as the reference image.",
+    views: [ {
+        label: "主视图",
+        src: "assets/dataset-cases/28-hero.webp",
+        width: 1920,
+        height: 1280
+    }, {
+        label: "俯视全景",
+        src: "assets/dataset-cases/28-alternate.webp",
+        width: 1400,
+        height: 933
+    }, {
+        label: "城门与塔楼",
+        src: "assets/dataset-cases/28-detail.webp",
+        width: 1400,
+        height: 933
+    }, {
+        label: "输入参考",
+        src: "assets/dataset-cases/28-reference.webp",
+        width: 1536,
+        height: 1024
+    } ]
+} ];

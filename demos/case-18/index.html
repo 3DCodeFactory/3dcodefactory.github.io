@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>The Algorithm — Parade Hangar</title>
+  <meta name="description" content="A huge, softly lit Thanksgiving parade float hangar the night before the parade. Interactive Three.js scene." />
+  <style>
+    @font-face { font-family: "local-mono"; src: local("IBM Plex Mono"), local("SFMono-Regular"), local("Menlo"), local("Consolas"); }
+    :root {
+      --ink: #e9eef4;
+      --muted: #9aa8b5;
+      --dim: #5e6b77;
+      --line: rgba(202, 221, 239, .16);
+      --glass: rgba(7, 12, 18, .58);
+      --blue: #72a9ff;
+      --warm: #ffb066;
+      --accent: #b7d9ff;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #05080c; }
+    body {
+      font-family: "local-mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      touch-action: none;
+    }
+    #stage { position: fixed; inset: 0; }
+    #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+    .cinematic {
+      position: fixed; inset: 0; pointer-events: none; z-index: 2;
+      background:
+        radial-gradient(ellipse 125% 100% at 52% 45%, transparent 35%, rgba(3,6,10,.10) 68%, rgba(2,4,8,.55) 112%),
+        linear-gradient(180deg, rgba(2,5,9,.28) 0%, transparent 16%, transparent 80%, rgba(1,3,6,.25) 100%);
+    }
+    .grain {
+      position: fixed; inset: 0; z-index: 3; pointer-events: none; opacity: .055; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.72'/%3E%3C/svg%3E");
+      background-size: 220px 220px;
+    }
+    .hud { position: fixed; z-index: 5; pointer-events: none; user-select: none; }
+
+    .top-left { top: clamp(22px, 3.4vw, 46px); left: clamp(22px, 3.6vw, 56px); display: flex; align-items: flex-start; gap: 14px; }
+    .index-mark {
+      width: 28px; height: 28px; border: 1px solid rgba(194,218,240,.32); border-radius: 50%;
+      display: grid; place-items: center; margin-top: 2px; position: relative; color: var(--accent);
+      font-size: 9px; letter-spacing: .06em;
+    }
+    .index-mark::after { content: ""; position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 12px 3px rgba(114,169,255,.5); }
+    .kicker { display: flex; align-items: center; gap: 9px; font-size: 9.5px; letter-spacing: .22em; color: #b7c6d4; text-transform: uppercase; }
+    .live-dot { width: 5px; height: 5px; border-radius: 50%; background: #7ee2b8; box-shadow: 0 0 8px rgba(126,226,184,.8); animation: breathe 3.8s ease-in-out infinite; }
+    @keyframes breathe { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+    h1 {
+      margin: 10px 0 4px; font-family: "Helvetica Neue", "Arial Narrow", Arial, sans-serif;
+      font-weight: 300; letter-spacing: .12em; font-size: clamp(20px, 2vw, 30px); line-height: 1;
+      color: #f2f5f8; text-shadow: 0 2px 22px rgba(0,0,0,.55);
+    }
+    h1 em { font-style: normal; color: #8badce; }
+    .subtitle { font-size: 8.5px; letter-spacing: .19em; text-transform: uppercase; color: #8192a0; }
+
+    .top-right {
+      top: clamp(22px, 3.4vw, 46px); right: clamp(22px, 3.6vw, 56px);
+      text-align: right; font-size: 8px; letter-spacing: .18em; color: #71818f; line-height: 1.9;
+    }
+    .top-right strong { color: #c5d3df; font-weight: 400; }
+    .coord-line { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+    .coord-line::before { content: ""; width: 22px; height: 1px; background: rgba(190,214,236,.25); }
+
+    .dock {
+      position: fixed; z-index: 6; left: 50%; bottom: clamp(18px, 3.1vh, 34px); transform: translateX(-50%);
+      width: min(780px, calc(100vw - 36px)); display: flex; align-items: stretch; gap: 0;
+      border: 1px solid rgba(188, 210, 231, .14); border-radius: 4px; overflow: hidden;
+      background: linear-gradient(180deg, rgba(13,19,26,.72), rgba(6,10,15,.58));
+      box-shadow: 0 18px 60px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.035);
+      backdrop-filter: blur(15px) saturate(115%);
+      -webkit-backdrop-filter: blur(15px) saturate(115%);
+      pointer-events: auto;
+    }
+    .hint {
+      flex: 1 1 55%; min-width: 0; padding: 15px 18px 14px; display: flex; gap: 12px; align-items: center;
+    }
+    .pointer-glyph {
+      flex: 0 0 31px; width: 31px; height: 31px; border: 1px solid rgba(170,199,226,.24); border-radius: 50%;
+      position: relative;
+    }
+    .pointer-glyph::before { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(188,213,235,.45); border-radius: 50%; }
+    .pointer-glyph::after {
+      content: ""; position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #b7d9ff;
+      left: 50%; top: 50%; transform: translate(-50%,-50%); box-shadow: 0 0 11px rgba(140,193,255,.9);
+    }
+    .hint-copy { min-width: 0; }
+    .hint-title { font-size: 9.5px; letter-spacing: .17em; color: #dbe7f1; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .35s; }
+    .hint-sub { margin-top: 6px; font-size: 8px; letter-spacing: .12em; color: #7f8f9e; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dock.energized .hint-title { color: #bfe3ff; }
+    .dock.energized .pointer-glyph { border-color: rgba(142,196,255,.55); box-shadow: 0 0 26px rgba(72,144,255,.14); }
+
+    .divider { width: 1px; background: rgba(188,210,231,.13); margin: 12px 0; flex: 0 0 1px; }
+    .warmth { flex: 0 1 45%; min-width: 290px; padding: 13px 18px 13px 17px; }
+    .warmth-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 9px; }
+    .warmth-label { font-size: 8px; letter-spacing: .2em; color: #8a9baa; text-transform: uppercase; }
+    .warmth-state { font-size: 8.5px; letter-spacing: .15em; color: #cbd8e3; text-transform: uppercase; transition: color .4s; }
+    .range-wrap { height: 18px; display: flex; align-items: center; position: relative; }
+    input[type="range"] {
+      appearance: none; -webkit-appearance: none; width: 100%; height: 2px; border: 0; outline: none; margin: 0;
+      background: linear-gradient(90deg, #7ea6d7 0%, #a9b2bc 46%, #eeaa6f 100%); border-radius: 2px; cursor: ew-resize;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none; -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
+      background: #eef4fa; border: 2px solid rgba(24,32,42,.9); box-shadow: 0 0 0 1px rgba(225,237,248,.36), 0 0 14px rgba(154,196,237,.35);
+      cursor: ew-resize; transition: transform .15s ease, box-shadow .2s;
+    }
+    input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.2); box-shadow: 0 0 0 1px rgba(225,237,248,.5), 0 0 20px rgba(181,210,244,.48); }
+    input[type="range"]::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: #eef4fa; border: 2px solid #1b2530; cursor: ew-resize; }
+    .range-ends { display: flex; justify-content: space-between; margin-top: 6px; font-size: 7px; letter-spacing: .16em; color: #61707e; text-transform: uppercase; }
+    .range-ends span:last-child { color: #9b7f68; }
+
+    .reset {
+      position: absolute; z-index: 7; right: clamp(22px, 3.6vw, 56px); bottom: calc(clamp(18px, 3.1vh, 34px) + 82px);
+      border: 1px solid rgba(183,208,231,.16); background: rgba(6,11,16,.38); color: #9fb0bf;
+      font: inherit; font-size: 7.5px; letter-spacing: .18em; text-transform: uppercase;
+      padding: 9px 12px; border-radius: 3px; cursor: pointer; backdrop-filter: blur(10px);
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    .reset:hover { color: #e4edf5; border-color: rgba(183,208,231,.36); background: rgba(18,27,37,.5); }
+    .reset:focus-visible { outline: 1px solid #a7c9ea; outline-offset: 3px; }
+
+    .loader {
+      position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; pointer-events: none;
+      background: #05090d; transition: opacity 1.2s cubic-bezier(.4,0,.2,1), visibility 1.2s;
+    }
+    .loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-inner { text-align: center; }
+    .loader-title { font-size: 10px; letter-spacing: .34em; color: #b4c7d8; text-transform: uppercase; }
+    .loader-bar { width: 116px; height: 1px; background: rgba(175,201,225,.16); margin: 17px auto 0; overflow: hidden; position: relative; }
+    .loader-bar::after { content: ""; position: absolute; inset: 0; background: #b8d4eb; transform-origin: left; animation: load 1.7s cubic-bezier(.4,0,.2,1) infinite; }
+    @keyframes load { 0% { transform: scaleX(0) translateX(0); } 55% { transform: scaleX(.7) translateX(20%); } 100% { transform: scaleX(.2) translateX(520%); } }
+    .error { position: fixed; inset: 0; display: none; place-items: center; z-index: 30; background: #05080c; color: #e4edf5; padding: 30px; text-align: center; font-size: 12px; line-height: 1.7; }
+
+    .vignette-corner { position: fixed; z-index: 4; pointer-events: none; width: 28vw; height: 28vw; max-width: 380px; max-height: 380px; }
+    .glow-left { left: -12vw; bottom: -14vw; background: radial-gradient(circle, rgba(25,67,121,.12), transparent 66%); }
+
+    @media (max-width: 720px) {
+      .top-right { display: none; }
+      .dock { flex-direction: column; width: calc(100vw - 24px); bottom: 12px; }
+      .divider { width: auto; height: 1px; margin: 0 14px; }
+      .warmth { min-width: 0; padding: 11px 16px 13px; }
+      .hint { padding: 13px 16px; }
+      .reset { bottom: calc(12px + 148px); right: 18px; }
+      .top-left { top: 18px; left: 18px; }
+      h1 { font-size: 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .live-dot, .loader-bar::after { animation: none; }
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three.module.js",
+        "three/addons/": "./vendor/addons/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="scene" aria-label="Interactive 3D Thanksgiving parade float hangar at night"></canvas>
+    <div class="cinematic"></div>
+    <div class="grain"></div>
+    <div class="vignette-corner glow-left"></div>
+  </div>
+
+  <header class="hud top-left">
+    <div class="index-mark">07</div>
+    <div>
+      <div class="kicker"><span class="live-dot"></span> Night crew · staging bay 03</div>
+      <h1>THE ALGORITHM<em> /</em></h1>
+      <div class="subtitle">Parade assembly · 04:37 AM · one night to go</div>
+    </div>
+  </header>
+
+  <div class="hud top-right">
+    <div class="coord-line"><strong>HANGAR 7</strong> · 40.8178° N</div>
+    <div>73.9267° W · 58°F / EXTERIOR</div>
+    <div><strong>FLOAT 19</strong> · ALGORITHM CORE</div>
+  </div>
+
+  <div class="dock" id="dock">
+    <div class="hint">
+      <div class="pointer-glyph" aria-hidden="true"></div>
+      <div class="hint-copy">
+        <div class="hint-title" id="hintTitle">Trace a cable to wake the float</div>
+        <div class="hint-sub" id="hintSub">Hover the thick silver + blue runs · drag to orbit · scroll to inspect</div>
+      </div>
+    </div>
+    <div class="divider" aria-hidden="true"></div>
+    <div class="warmth">
+      <div class="warmth-head">
+        <label class="warmth-label" for="warmth">Hangar light</label>
+        <span class="warmth-state" id="warmthState">COLD WORK WASH</span>
+      </div>
+      <div class="range-wrap">
+        <input id="warmth" type="range" min="0" max="100" value="12" aria-label="Blend hangar lighting from cold work lights to warm pre-dawn glow" />
+      </div>
+      <div class="range-ends"><span>04:12 · cold</span><span>05:58 · pre-dawn</span></div>
+    </div>
+  </div>
+
+  <button class="reset" id="reset" type="button" title="Reset camera view (R)">Reset view</button>
+
+  <div class="loader" id="loader">
+    <div class="loader-inner">
+      <div class="loader-title">Waking the algorithm</div>
+      <div class="loader-bar"></div>
+    </div>
+  </div>
+  <div class="error" id="error">
+    This scene needs WebGL 2. Please open it in a current desktop browser.
+  </div>
+
+  <script type="module" src="./app.js"></script>
+<script src="../camera-limits.js"></script><script src="../scene-ui.js?v=20261114"></script></body>
+</html>
